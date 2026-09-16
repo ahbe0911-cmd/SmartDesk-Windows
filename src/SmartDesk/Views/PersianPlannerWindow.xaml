@@ -1,0 +1,62 @@
+<Window x:Class="SmartDesk.Views.PersianPlannerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="تقویم، یادداشت و یادآور" Width="1080" Height="720" MinWidth="900" MinHeight="620"
+        WindowStartupLocation="CenterOwner" FlowDirection="RightToLeft" Background="{DynamicResource AppBackgroundBrush}">
+    <Grid Margin="22">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="1.15*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="0.85*"/></Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{DynamicResource ElevatedBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="20" Padding="20">
+            <Grid>
+                <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Button Content="‹" Width="42" Height="36" HorizontalAlignment="Left" Click="NextMonth_Click"/>
+                    <TextBlock x:Name="MonthTitle" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Button Content="›" Width="42" Height="36" HorizontalAlignment="Right" Click="PreviousMonth_Click"/>
+                </Grid>
+                <UniformGrid Grid.Row="1" Columns="7" Margin="0,18,0,8">
+                    <TextBlock Text="شنبه" TextAlignment="Center"/><TextBlock Text="یکشنبه" TextAlignment="Center"/><TextBlock Text="دوشنبه" TextAlignment="Center"/><TextBlock Text="سه‌شنبه" TextAlignment="Center"/><TextBlock Text="چهارشنبه" TextAlignment="Center"/><TextBlock Text="پنج‌شنبه" TextAlignment="Center"/><TextBlock Text="جمعه" TextAlignment="Center" Foreground="#E06C75"/>
+                </UniformGrid>
+                <UniformGrid x:Name="CalendarGrid" Grid.Row="2" Columns="7" Rows="6"/>
+                <TextBlock x:Name="SelectedDateText" Grid.Row="3" Margin="0,14,0,0" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"/>
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Column="2" Background="Transparent" BorderThickness="0">
+            <TabItem Header="یادآورها">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <Border Background="{DynamicResource ElevatedBackgroundBrush}" CornerRadius="18" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBox x:Name="ReminderTitleBox" Margin="0,0,0,8" Padding="10" ToolTip="عنوان یادآور"/>
+                            <TextBox x:Name="ReminderNoteBox" Margin="0,0,0,8" Padding="10" Height="62" AcceptsReturn="True" TextWrapping="Wrap" ToolTip="توضیحات"/>
+                            <Grid Margin="0,0,0,8"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                <TextBox x:Name="YearBox" Grid.Column="0" Margin="2" Padding="7"/><TextBox x:Name="MonthBox" Grid.Column="1" Margin="2" Padding="7"/><TextBox x:Name="DayBox" Grid.Column="2" Margin="2" Padding="7"/><TextBox x:Name="HourBox" Grid.Column="3" Margin="2" Padding="7"/><TextBox x:Name="MinuteBox" Grid.Column="4" Margin="2" Padding="7"/>
+                            </Grid>
+                            <TextBlock Text="سال / ماه / روز / ساعت / دقیقه" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="4,0,4,10"/>
+                            <Button Content="ثبت یادآور در ویندوز" Padding="12" Click="AddReminder_Click"/>
+                        </StackPanel>
+                    </Border>
+                    <ListBox x:Name="RemindersList" Grid.Row="1" Margin="0,12,0,0" SelectionChanged="RemindersList_SelectionChanged">
+                        <ListBox.ItemTemplate><DataTemplate><StackPanel Margin="6"><TextBlock Text="{Binding Title}" FontWeight="SemiBold"/><TextBlock Text="{Binding DueDisplay}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/></StackPanel></DataTemplate></ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button Grid.Row="1" Content="حذف" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Padding="14,6" Click="DeleteReminder_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="یادداشت‌ها">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <Border Background="{DynamicResource ElevatedBackgroundBrush}" CornerRadius="18" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBox x:Name="NoteTitleBox" Padding="10" Margin="0,0,0,8" ToolTip="عنوان یادداشت"/>
+                            <TextBox x:Name="NoteContentBox" Padding="10" Height="110" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" ToolTip="متن یادداشت"/>
+                            <Button Content="ذخیره یادداشت" Margin="0,10,0,0" Padding="12" Click="SaveNote_Click"/>
+                        </StackPanel>
+                    </Border>
+                    <ListBox x:Name="NotesList" Grid.Row="1" Margin="0,12,0,0" SelectionChanged="NotesList_SelectionChanged" DisplayMemberPath="Title"/>
+                    <Button Grid.Row="1" Content="حذف" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Padding="14,6" Click="DeleteNote_Click"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
