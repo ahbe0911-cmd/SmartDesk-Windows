@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+publish/
+artifacts/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Installer dependency downloaded by CI
+installer/MicrosoftEdgeWebview2Setup.exe
+
+# Logs and local data
+*.log
+*.tmp
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

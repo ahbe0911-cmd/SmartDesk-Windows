@@ -1,0 +1,88 @@
+<Window x:Class="SmartDesk.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="تنظیمات میزکار هوشمند"
+        Width="560"
+        Height="570"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,24">
+            <TextBlock Text="تنظیمات" FontSize="25" FontWeight="SemiBold" />
+            <TextBlock Text="رفتار مرورگر و ظاهر برنامه را شخصی‌سازی کنید."
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,7,0,0" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="صفحه خانه" FontWeight="SemiBold" Margin="0,0,0,7" />
+            <TextBox x:Name="HomeUrlBox"
+                     Style="{StaticResource RoundedTextBoxStyle}"
+                     FlowDirection="LeftToRight"
+                     TextAlignment="Left" />
+
+            <TextBlock Text="پوسته برنامه" FontWeight="SemiBold" Margin="0,20,0,7" />
+            <ComboBox x:Name="ThemeCombo"
+                      Height="43"
+                      Padding="10,6"
+                      Background="{DynamicResource InputBackgroundBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      BorderBrush="{DynamicResource BorderBrush}">
+                <ComboBoxItem Content="تیره" Tag="Dark" />
+                <ComboBoxItem Content="روشن" Tag="Light" />
+                <ComboBoxItem Content="هماهنگ با ویندوز" Tag="System" />
+            </ComboBox>
+
+            <Border Background="{DynamicResource ElevatedBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16"
+                    Margin="0,22,0,0">
+                <StackPanel>
+                    <CheckBox x:Name="OpenInNewTabCheck"
+                              Content="میانبرها در زبانه جدید باز شوند"
+                              Foreground="{DynamicResource TextPrimaryBrush}"
+                              Margin="0,0,0,15" />
+                    <CheckBox x:Name="RestoreSessionCheck"
+                              Content="زبانه‌های جلسه قبل دوباره باز شوند"
+                              Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="#182B38"
+                    BorderBrush="#24566A"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="15"
+                    Margin="0,20,0,0">
+                <TextBlock Text="رمزها، کوکی‌ها و ورود به سایت‌ها در پوشه اختصاصی برنامه روی همین رایانه نگهداری می‌شوند. بررسی SSL غیرفعال نمی‌شود."
+                           Foreground="#B9E6F2"
+                           TextWrapping="Wrap"
+                           LineHeight="22" />
+            </Border>
+
+            <TextBlock x:Name="ValidationText"
+                       Foreground="{DynamicResource DangerBrush}"
+                       Margin="0,15,0,0"
+                       Visibility="Collapsed" />
+        </StackPanel>
+
+        <Grid Grid.Row="2" Margin="0,25,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="انصراف" Style="{StaticResource SecondaryButtonStyle}" Click="Cancel_Click" />
+            <Button Grid.Column="2" Content="ذخیره تنظیمات" Style="{StaticResource PrimaryButtonStyle}" Click="Save_Click" />
+        </Grid>
+    </Grid>
+</Window>

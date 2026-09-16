@@ -1,0 +1,48 @@
+<UserControl x:Class="SmartDesk.Views.BrowserTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             FlowDirection="LeftToRight">
+    <Grid Background="{DynamicResource WindowBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ProgressBar x:Name="LoadingProgress"
+                     Grid.Row="0"
+                     IsIndeterminate="True"
+                     Visibility="Collapsed"
+                     Foreground="{DynamicResource AccentBrush}"
+                     Background="Transparent" />
+
+        <wv2:WebView2 x:Name="Browser"
+                     Grid.Row="1"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     DefaultBackgroundColor="#FFFFFF" />
+
+        <Border x:Name="ErrorPanel"
+                Grid.Row="1"
+                Visibility="Collapsed"
+                Background="{DynamicResource WindowBackgroundBrush}"
+                FlowDirection="RightToLeft">
+            <StackPanel Width="430" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Width="66" Height="66" CornerRadius="33" Background="{DynamicResource ElevatedBackgroundBrush}" HorizontalAlignment="Center">
+                    <TextBlock Text="!" FontSize="34" FontWeight="SemiBold" Foreground="{DynamicResource DangerBrush}" HorizontalAlignment="Center" />
+                </Border>
+                <TextBlock Text="صفحه باز نشد" FontSize="22" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,20,0,8" />
+                <TextBlock x:Name="ErrorMessageText"
+                           Text="اتصال اینترنت و نشانی واردشده را بررسی کنید."
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+                <Button Content="تلاش دوباره"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,22,0,0"
+                        Click="Retry_Click" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

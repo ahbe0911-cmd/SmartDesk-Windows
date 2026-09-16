@@ -1,0 +1,302 @@
+<Window x:Class="SmartDesk.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:SmartDesk.Models"
+        Title="میزکار هوشمند"
+        Icon="Resources/AppIcon.ico"
+        Width="1280"
+        Height="800"
+        MinWidth="980"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        PreviewKeyDown="Window_PreviewKeyDown">
+    <Window.Resources>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Padding" Value="13,8" />
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Border x:Name="TabBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,1,1,0"
+                                CornerRadius="9,9,0,0"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource ElevatedBackgroundBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TinyActionButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid FlowDirection="LeftToRight" Background="{DynamicResource WindowBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="270" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="32" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Background="{DynamicResource PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="14,11">
+                <Grid FlowDirection="LeftToRight">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="BackButton" Grid.Column="0" Content="←" Style="{StaticResource NavButtonStyle}" ToolTip="عقب" Click="BackButton_Click" />
+                    <Button x:Name="ForwardButton" Grid.Column="1" Content="→" Style="{StaticResource NavButtonStyle}" ToolTip="جلو" Click="ForwardButton_Click" Margin="6,0,0,0" />
+                    <Button x:Name="ReloadButton" Grid.Column="2" Content="↻" Style="{StaticResource NavButtonStyle}" ToolTip="تازه‌سازی" Click="ReloadButton_Click" Margin="6,0,0,0" />
+                    <Button x:Name="HomeButton" Grid.Column="3" Content="⌂" Style="{StaticResource NavButtonStyle}" ToolTip="صفحه خانه" Click="HomeButton_Click" Margin="6,0,0,0" />
+
+                    <Border Grid.Column="5"
+                            Background="{DynamicResource InputBackgroundBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="11">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="SecurityText"
+                                       Grid.Column="0"
+                                       Text="●"
+                                       Foreground="{DynamicResource TextMutedBrush}"
+                                       HorizontalAlignment="Center"
+                                       ToolTip="وضعیت اتصال" />
+                            <TextBox x:Name="AddressBox"
+                                     Grid.Column="1"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     CaretBrush="{DynamicResource AccentBrush}"
+                                     VerticalContentAlignment="Center"
+                                     FlowDirection="LeftToRight"
+                                     TextAlignment="Left"
+                                     Padding="6,8,10,8"
+                                     KeyDown="AddressBox_KeyDown"
+                                     GotKeyboardFocus="AddressBox_GotKeyboardFocus" />
+                        </Grid>
+                    </Border>
+
+                    <Button Grid.Column="7" Content="برو" Style="{StaticResource PrimaryButtonStyle}" Click="GoButton_Click" Padding="16,9" />
+                    <Button x:Name="ExternalButton" Grid.Column="9" Content="↗" Style="{StaticResource NavButtonStyle}" ToolTip="بازکردن در مرورگر پیش‌فرض" Click="ExternalButton_Click" />
+                    <Button Grid.Column="10" Content="＋" Style="{StaticResource NavButtonStyle}" ToolTip="زبانه جدید (Ctrl+T)" Click="NewTabButton_Click" Margin="6,0,0,0" />
+                </Grid>
+            </Border>
+
+            <TabControl x:Name="BrowserTabs"
+                        Grid.Row="1"
+                        Background="{DynamicResource WindowBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="0"
+                        Padding="8,8,8,0"
+                        FlowDirection="LeftToRight"
+                        SelectionChanged="BrowserTabs_SelectionChanged" />
+
+            <Border Grid.Row="2"
+                    Background="{DynamicResource PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="12,0">
+                <Grid FlowDirection="RightToLeft">
+                    <TextBlock x:Name="StatusText"
+                               Text="در حال آماده‌سازی مرورگر..."
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="12"
+                               HorizontalAlignment="Right" />
+                    <TextBlock Text="SmartDesk 1.0"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               FontSize="11"
+                               HorizontalAlignment="Left" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Column="1"
+                Background="{DynamicResource PanelBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1,0,0,0"
+                FlowDirection="RightToLeft">
+            <Grid Margin="18,20,18,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="48" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Width="44" Height="44" CornerRadius="13" Background="{DynamicResource AccentBrush}">
+                        <TextBlock Text="س" Foreground="{DynamicResource AccentTextBrush}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="میزکار هوشمند" FontSize="17" FontWeight="SemiBold" />
+                        <TextBlock Text="مرورگر و دسترسی سریع" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Margin="0,3,0,0" />
+                    </StackPanel>
+                </Grid>
+
+                <Border Grid.Row="1"
+                        Background="{DynamicResource ElevatedBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="14,12"
+                        Margin="0,20,0,16">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock x:Name="DateText" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <TextBlock x:Name="TimeText" FontSize="27" FontWeight="SemiBold" Margin="0,3,0,0" />
+                        </StackPanel>
+                        <TextBlock Text="●" Foreground="{DynamicResource SuccessBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" ToolTip="برنامه فعال است" />
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Row="2">
+                    <Grid>
+                        <TextBox x:Name="QuickLinkSearchBox"
+                                 Style="{StaticResource RoundedTextBoxStyle}"
+                                 Padding="12,7"
+                                 TextChanged="QuickLinkSearchBox_TextChanged" />
+                        <TextBlock Text="جست‌وجوی میانبرها"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   Margin="13,0"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=QuickLinkSearchBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                    <Grid Margin="0,15,0,8">
+                        <TextBlock Text="دسترسی‌های سریع" FontWeight="SemiBold" />
+                        <Button Content="＋ افزودن" Style="{StaticResource BaseButtonStyle}" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Left" Padding="5,2" Click="AddQuickLink_Click" />
+                    </Grid>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="QuickLinksList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:QuickLink}">
+                                <Border Background="{DynamicResource ElevatedBackgroundBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Margin="0,0,0,9"
+                                        Padding="7">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button Grid.Column="0"
+                                                Style="{StaticResource BaseButtonStyle}"
+                                                Background="Transparent"
+                                                HorizontalContentAlignment="Stretch"
+                                                Padding="5"
+                                                Tag="{Binding}"
+                                                Click="QuickLink_Click">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="42" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0"
+                                                        Width="36"
+                                                        Height="36"
+                                                        CornerRadius="10"
+                                                        Background="{Binding AccentHex, Converter={StaticResource AccentBrushConverter}}">
+                                                    <TextBlock Text="{Binding Icon}" Foreground="White" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1" Margin="9,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding Category}" Foreground="{DynamicResource TextMutedBrush}" FontSize="11" Margin="0,3,0,0" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <Button Content="✎" Style="{StaticResource TinyActionButtonStyle}" ToolTip="ویرایش" Tag="{Binding}" Click="EditQuickLink_Click" />
+                                            <Button Content="×" Style="{StaticResource TinyActionButtonStyle}" Foreground="{DynamicResource DangerBrush}" ToolTip="حذف" Tag="{Binding}" Click="DeleteQuickLink_Click" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="4" Margin="0,15,0,0">
+                    <Button Content="⚙  تنظیمات مرورگر"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            HorizontalContentAlignment="Right"
+                            Click="SettingsButton_Click" />
+                    <Grid Margin="0,9,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="بازیابی" Style="{StaticResource BaseButtonStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Click="ImportButton_Click" />
+                        <Button Grid.Column="2" Content="پشتیبان" Style="{StaticResource BaseButtonStyle}" Foreground="{DynamicResource TextSecondaryBrush}" Click="ExportButton_Click" />
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
