@@ -68,9 +68,7 @@ public sealed class AppDataService
         foreach (var item in data.QuickLinks)
         {
             if (!BrowserUriService.TryNormalize(item.Url, out _))
-            {
                 throw new InvalidDataException($"نشانی میانبر «{item.Title}» معتبر نیست.");
-            }
         }
 
         Save(data);
@@ -81,56 +79,49 @@ public sealed class AppDataService
     {
         QuickLinks =
         [
-            new QuickLink
-            {
-                Title = "سامانه سامان",
-                Url = "https://www.samanpl.ir/",
-                Category = "کتابخانه",
-                Icon = "ک",
-                AccentHex = "#14B8A6",
-                SortOrder = 0
-            },
-            new QuickLink
-            {
-                Title = "جست‌وجوی گوگل",
-                Url = "https://www.google.com/",
-                Category = "جست‌وجو",
-                Icon = "ج",
-                AccentHex = "#4285F4",
-                SortOrder = 1
-            },
-            new QuickLink
-            {
-                Title = "نهاد کتابخانه‌ها",
-                Url = "https://www.iranpl.ir/",
-                Category = "کتابخانه",
-                Icon = "ن",
-                AccentHex = "#F59E0B",
-                SortOrder = 2
-            }
+            new QuickLink { Title = "سامانه سامان", Url = "https://www.samanpl.ir/", Category = "کتابخانه", Icon = "ک", AccentHex = "#14B8A6", SortOrder = 0 },
+            new QuickLink { Title = "جست‌وجوی گوگل", Url = "https://www.google.com/", Category = "جست‌وجو", Icon = "ج", AccentHex = "#4285F4", SortOrder = 1 },
+            new QuickLink { Title = "نهاد کتابخانه‌ها", Url = "https://www.iranpl.ir/", Category = "کتابخانه", Icon = "ن", AccentHex = "#F59E0B", SortOrder = 2 }
         ]
     };
 
     private static void Normalize(AppData data)
     {
+        data.SchemaVersion = Math.Max(data.SchemaVersion, 2);
         data.Settings ??= new AppSettings();
         data.QuickLinks ??= [];
+        data.Notes ??= [];
+        data.Reminders ??= [];
         data.Settings.LastOpenTabs ??= [];
 
         var usedIds = new HashSet<Guid>();
         foreach (var item in data.QuickLinks)
         {
-            if (item.Id == Guid.Empty || !usedIds.Add(item.Id))
-            {
-                item.Id = Guid.NewGuid();
-                usedIds.Add(item.Id);
-            }
-
+            if (item.Id == Guid.Empty || !usedIds.Add(item.Id)) item.Id = Guid.NewGuid();
+            usedIds.Add(item.Id);
             item.Title = (item.Title ?? string.Empty).Trim();
             item.Url = (item.Url ?? string.Empty).Trim();
             item.Category = string.IsNullOrWhiteSpace(item.Category) ? "عمومی" : item.Category.Trim();
             item.Icon = string.IsNullOrWhiteSpace(item.Icon) ? "●" : item.Icon.Trim();
             item.AccentHex = string.IsNullOrWhiteSpace(item.AccentHex) ? "#18A999" : item.AccentHex.Trim();
+        }
+
+        usedIds.Clear();
+        foreach (var item in data.Notes)
+        {
+            if (item.Id == Guid.Empty || !usedIds.Add(item.Id)) item.Id = Guid.NewGuid();
+            usedIds.Add(item.Id);
+            item.Title = (item.Title ?? string.Empty).Trim();
+            item.Content ??= string.Empty;
+        }
+
+        usedIds.Clear();
+        foreach (var item in data.Reminders)
+        {
+            if (item.Id == Guid.Empty || !usedIds.Add(item.Id)) item.Id = Guid.NewGuid();
+            usedIds.Add(item.Id);
+            item.Title = (item.Title ?? string.Empty).Trim();
+            item.Note ??= string.Empty;
         }
     }
 
@@ -142,9 +133,6 @@ public sealed class AppDataService
             var destination = Path.Combine(AppPaths.BackupDirectory, $"corrupt-{DateTime.Now:yyyyMMdd-HHmmss}.json");
             File.Copy(AppPaths.DataFile, destination, true);
         }
-        catch
-        {
-            // Best-effort backup only.
-        }
+        catch { }
     }
 }
