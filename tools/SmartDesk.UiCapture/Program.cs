@@ -13,7 +13,9 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        var app = new SmartDesk.App { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        app.InitializeComponent();
+
         var dashboard = new DashboardView();
         dashboard.SetQuickLinks(new[]
         {
