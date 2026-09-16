@@ -13,8 +13,8 @@ public partial class DashboardView : UserControl
     private readonly DispatcherTimer _clockTimer;
 
     public event EventHandler<QuickLink>? QuickLinkRequested;
-    public event EventHandler? CalendarRequested;
-    public event EventHandler? NotesRemindersRequested;
+    public event EventHandler? AddLinkRequested;
+    public event EventHandler? PlannerRequested;
     public event EventHandler<string>? ThemeRequested;
 
     public DashboardView()
@@ -36,7 +36,9 @@ public partial class DashboardView : UserControl
     private void UpdateClock()
     {
         var now = DateTime.Now;
-        DashboardDateText.Text = PersianDateService.FormatDate(now);
+        var date = PersianDateService.FormatDate(now);
+        DashboardDateText.Text = date;
+        PlannerDateText.Text = date;
         DashboardTimeText.Text = PersianDateService.FormatTime(now);
     }
 
@@ -45,8 +47,8 @@ public partial class DashboardView : UserControl
         if ((sender as FrameworkElement)?.Tag is QuickLink link) QuickLinkRequested?.Invoke(this, link);
     }
 
-    private void Calendar_Click(object sender, RoutedEventArgs e) => CalendarRequested?.Invoke(this, EventArgs.Empty);
-    private void NotesReminders_Click(object sender, RoutedEventArgs e) => NotesRemindersRequested?.Invoke(this, EventArgs.Empty);
+    private void AddLink_Click(object sender, RoutedEventArgs e) => AddLinkRequested?.Invoke(this, EventArgs.Empty);
+    private void Planner_Click(object sender, RoutedEventArgs e) => PlannerRequested?.Invoke(this, EventArgs.Empty);
     private void LightTheme_Click(object sender, RoutedEventArgs e) => ThemeRequested?.Invoke(this, "Light");
     private void DarkTheme_Click(object sender, RoutedEventArgs e) => ThemeRequested?.Invoke(this, "Dark");
 }
