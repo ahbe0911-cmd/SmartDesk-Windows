@@ -2,7 +2,7 @@ name: Build SmartDesk Windows
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/persian-planner-reminders]
   workflow_dispatch:
 
 permissions:
@@ -46,21 +46,14 @@ jobs:
         shell: pwsh
         run: |
           $target = "$env:GITHUB_WORKSPACE\installer\MicrosoftEdgeWebview2Setup.exe"
-          Invoke-WebRequest `
-            -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" `
-            -OutFile $target `
-            -UseBasicParsing
-          if ((Get-Item $target).Length -lt 100000) {
-            throw "WebView2 bootstrapper download is incomplete."
-          }
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile $target -UseBasicParsing
+          if ((Get-Item $target).Length -lt 100000) { throw "WebView2 bootstrapper download is incomplete." }
 
       - name: Install Inno Setup
         shell: pwsh
         run: |
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
-          if (-not (Test-Path $iscc)) {
-            choco install innosetup --yes --no-progress
-          }
+          if (-not (Test-Path $iscc)) { choco install innosetup --yes --no-progress }
 
       - name: Build installer
         shell: pwsh
@@ -69,9 +62,7 @@ jobs:
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           $publishDir = "$env:GITHUB_WORKSPACE\publish\win-x64"
           & $iscc "/DPublishDir=$publishDir" "$env:GITHUB_WORKSPACE\installer\SmartDesk.iss"
-          if ($LASTEXITCODE -ne 0) {
-            throw "Inno Setup failed with exit code $LASTEXITCODE"
-          }
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
 
       - name: Create portable package and checksums
         shell: pwsh
