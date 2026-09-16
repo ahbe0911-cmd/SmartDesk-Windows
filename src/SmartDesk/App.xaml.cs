@@ -31,6 +31,7 @@ public partial class App : Application
         ThemeService.Apply(data.Settings.Theme);
 
         var window = new MainWindow(data, dataService);
+        window.EnableDashboardV2();
         MainWindow = window;
         window.Show();
 
