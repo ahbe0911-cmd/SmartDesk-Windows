@@ -40,7 +40,6 @@ jobs:
           if (-not (Test-Path $exe)) { throw "SmartDesk.exe not found" }
           $p = Start-Process -FilePath $exe -PassThru
           Start-Sleep -Seconds 12
-
           Add-Type -AssemblyName System.Windows.Forms
           Add-Type -AssemblyName System.Drawing
           Add-Type @'
@@ -51,7 +50,6 @@ jobs:
             [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
           }
           '@
-
           $p.Refresh()
           if ($p.HasExited) { throw "SmartDesk exited before screenshot" }
           if ($p.MainWindowHandle -ne 0) {
@@ -59,7 +57,6 @@ jobs:
             [Win32Shot]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
             Start-Sleep -Seconds 3
           }
-
           $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
           $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
           $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -79,3 +76,5 @@ jobs:
           path: screenshots/SmartDesk-V6-real.png
           if-no-files-found: error
           retention-days: 7
+
+# capture-trigger: 2026-09-17-v1
