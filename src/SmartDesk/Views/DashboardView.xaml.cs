@@ -13,10 +13,9 @@ public partial class DashboardView : UserControl
     private readonly DispatcherTimer _clockTimer;
 
     public event EventHandler<QuickLink>? QuickLinkRequested;
-    public event EventHandler? QuickNoteRequested;
     public event EventHandler? CalendarRequested;
-    public event EventHandler? TodayTasksRequested;
-    public event EventHandler? ToolsRequested;
+    public event EventHandler? NotesRemindersRequested;
+    public event EventHandler<string>? ThemeRequested;
 
     public DashboardView()
     {
@@ -31,10 +30,7 @@ public partial class DashboardView : UserControl
     public void SetQuickLinks(IEnumerable<QuickLink> links)
     {
         _links.Clear();
-        foreach (var link in links.OrderBy(x => x.SortOrder).Take(7))
-        {
-            _links.Add(link);
-        }
+        foreach (var link in links.OrderBy(x => x.SortOrder).Take(7)) _links.Add(link);
     }
 
     private void UpdateClock()
@@ -46,12 +42,11 @@ public partial class DashboardView : UserControl
 
     private void QuickLinkCard_Click(object sender, RoutedEventArgs e)
     {
-        if ((sender as FrameworkElement)?.Tag is QuickLink link)
-            QuickLinkRequested?.Invoke(this, link);
+        if ((sender as FrameworkElement)?.Tag is QuickLink link) QuickLinkRequested?.Invoke(this, link);
     }
 
-    private void QuickNote_Click(object sender, RoutedEventArgs e) => QuickNoteRequested?.Invoke(this, EventArgs.Empty);
     private void Calendar_Click(object sender, RoutedEventArgs e) => CalendarRequested?.Invoke(this, EventArgs.Empty);
-    private void TodayTasks_Click(object sender, RoutedEventArgs e) => TodayTasksRequested?.Invoke(this, EventArgs.Empty);
-    private void Tools_Click(object sender, RoutedEventArgs e) => ToolsRequested?.Invoke(this, EventArgs.Empty);
+    private void NotesReminders_Click(object sender, RoutedEventArgs e) => NotesRemindersRequested?.Invoke(this, EventArgs.Empty);
+    private void LightTheme_Click(object sender, RoutedEventArgs e) => ThemeRequested?.Invoke(this, "Light");
+    private void DarkTheme_Click(object sender, RoutedEventArgs e) => ThemeRequested?.Invoke(this, "Dark");
 }

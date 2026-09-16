@@ -20,10 +20,9 @@ public partial class MainWindow
         _dashboardView = new DashboardView();
         _dashboardView.SetQuickLinks(_quickLinks);
         _dashboardView.QuickLinkRequested += Dashboard_QuickLinkRequested;
-        _dashboardView.QuickNoteRequested += (_, _) => OpenPlanner();
         _dashboardView.CalendarRequested += (_, _) => OpenPlanner();
-        _dashboardView.TodayTasksRequested += (_, _) => OpenPlanner();
-        _dashboardView.ToolsRequested += (_, _) => ShowDashboardFeatureMessage("ابزارها", "ابزارهای کاربردی در مرحله بعد اضافه می‌شوند.");
+        _dashboardView.NotesRemindersRequested += (_, _) => OpenPlanner();
+        _dashboardView.ThemeRequested += Dashboard_ThemeRequested;
 
         _dashboardTab = new TabItem
         {
@@ -49,12 +48,32 @@ public partial class MainWindow
         StatusText.Text = "تقویم شمسی، یادداشت‌ها و یادآورها به‌روز شدند.";
     }
 
+    private void Dashboard_ThemeRequested(object? sender, string theme)
+    {
+        _data.Settings.Theme = theme;
+        ThemeService.Apply(theme);
+        _dataService.Save(_data);
+        foreach (var browser in BrowserTabs.Items.OfType<TabItem>().Select(x => x.Tag).OfType<BrowserTabView>()) browser.ApplyTheme();
+        StatusText.Text = theme == "Light" ? "تم روشن فعال شد." : "تم تیره فعال شد.";
+    }
+
     private void QuickLinks_CollectionChangedForDashboard(object? sender, NotifyCollectionChangedEventArgs e) => _dashboardView?.SetQuickLinks(_quickLinks);
 
-    private async void Dashboard_QuickLinkRequested(object? sender, QuickLink link)
+    private void Dashboard_QuickLinkRequested(object? sender, QuickLink link)
     {
-        var browser = await CreateTabAsync(link.Url, activate: true);
-        if (browser is not null) StatusText.Text = $"«{link.Title}» در SmartDesk باز شد.";
+        if (_browserEnvironment is null)
+        {
+            StatusText.Text = "مرورگر داخلی هنوز آماده نیست.";
+            return;
+        }
+
+        var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url)
+        {
+            Owner = this
+        };
+        StatusText.Text = $"«{link.Title}» در نمای تمام‌صفحه SmartDesk باز شد.";
+        browserWindow.ShowDialog();
+        ShowDashboard();
     }
 
     private void DashboardHomeButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -70,11 +89,5 @@ public partial class MainWindow
         AddressBox.Text = string.Empty;
         StatusText.Text = "صفحه اصلی SmartDesk";
         Title = "میزکار هوشمند";
-    }
-
-    private void ShowDashboardFeatureMessage(string title, string message)
-    {
-        StatusText.Text = message;
-        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }
