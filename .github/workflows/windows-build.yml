@@ -2,7 +2,7 @@ name: Build SmartDesk Windows
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/dashboard-v2]
   workflow_dispatch:
 
 permissions:
