@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace SmartDesk.Services;
 
 public static class AppPaths
