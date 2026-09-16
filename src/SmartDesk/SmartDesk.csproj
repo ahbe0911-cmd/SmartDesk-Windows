@@ -30,5 +30,6 @@
 
   <ItemGroup>
     <Resource Include="Resources\AppIcon.ico" />
+    <Resource Include="Resources\Fonts\Vazirmatn.ttf" />
   </ItemGroup>
 </Project>
