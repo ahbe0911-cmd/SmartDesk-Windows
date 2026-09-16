@@ -21,6 +21,8 @@ public partial class MainWindow
         _dashboardView.SetQuickLinks(_quickLinks);
         _dashboardView.QuickLinkRequested += Dashboard_QuickLinkRequested;
         _dashboardView.AddLinkRequested += Dashboard_AddLinkRequested;
+        _dashboardView.EditLinkRequested += Dashboard_EditLinkRequested;
+        _dashboardView.DeleteLinkRequested += Dashboard_DeleteLinkRequested;
         _dashboardView.PlannerRequested += (_, _) => OpenPlanner();
         _dashboardView.ThemeRequested += Dashboard_ThemeRequested;
 
@@ -37,12 +39,18 @@ public partial class MainWindow
         _quickLinks.CollectionChanged += QuickLinks_CollectionChangedForDashboard;
         HomeButton.PreviewMouseLeftButtonDown += DashboardHomeButton_PreviewMouseLeftButtonDown;
         WindowsReminderService.RescheduleAll(_data.Reminders);
-        StatusText.Text = "داشبورد SmartDesk آماده است.";
+        StatusText.Text = "داشبورد SmartDesk V5 آماده است.";
         Title = "میزکار هوشمند";
     }
 
     private void Dashboard_AddLinkRequested(object? sender, EventArgs e)
     {
+        if (_quickLinks.Count >= 7)
+        {
+            MessageBox.Show("حداکثر ۷ لینک سریع می‌توانید داشته باشید. برای افزودن لینک جدید، یکی از لینک‌های فعلی را حذف یا ویرایش کنید.", "لینک‌های سریع", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
         var dialog = new QuickLinkEditorWindow { Owner = this };
         if (dialog.ShowDialog() != true || dialog.Result is null) return;
         dialog.Result.SortOrder = _quickLinks.Count == 0 ? 0 : _quickLinks.Max(item => item.SortOrder) + 1;
@@ -52,11 +60,34 @@ public partial class MainWindow
         StatusText.Text = "لینک سریع جدید ذخیره شد.";
     }
 
+    private void Dashboard_EditLinkRequested(object? sender, QuickLink link)
+    {
+        var dialog = new QuickLinkEditorWindow(link) { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.Result is null) return;
+        var index = _quickLinks.IndexOf(link);
+        if (index < 0) return;
+        _quickLinks[index] = dialog.Result;
+        SaveQuickLinks();
+        _dashboardView?.SetQuickLinks(_quickLinks);
+        StatusText.Text = "لینک سریع ویرایش شد.";
+    }
+
+    private void Dashboard_DeleteLinkRequested(object? sender, QuickLink link)
+    {
+        var answer = MessageBox.Show($"لینک «{link.Title}» حذف شود؟", "حذف لینک سریع", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+        if (answer != MessageBoxResult.Yes) return;
+        _quickLinks.Remove(link);
+        SaveQuickLinks();
+        _dashboardView?.SetQuickLinks(_quickLinks);
+        StatusText.Text = "لینک سریع حذف شد.";
+    }
+
     private void OpenPlanner()
     {
         var window = new PersianPlannerWindow(_data, _dataService) { Owner = this };
         window.ShowDialog();
-        StatusText.Text = "برنامه‌ریز به‌روز شد.";
+        WindowsReminderService.RescheduleAll(_data.Reminders);
+        StatusText.Text = "برنامه‌ریز و یادآورها به‌روز شدند.";
     }
 
     private void Dashboard_ThemeRequested(object? sender, string theme)
@@ -79,7 +110,7 @@ public partial class MainWindow
         }
 
         var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url) { Owner = this };
-        StatusText.Text = $"«{link.Title}» در نمای تمام‌صفحه SmartDesk باز شد.";
+        StatusText.Text = $"«{link.Title}» در مرورگر تمام‌صفحه SmartDesk باز شد.";
         browserWindow.ShowDialog();
         ShowDashboard();
     }
@@ -95,7 +126,7 @@ public partial class MainWindow
         if (_dashboardTab is null) return;
         BrowserTabs.SelectedItem = _dashboardTab;
         AddressBox.Text = string.Empty;
-        StatusText.Text = "صفحه اصلی SmartDesk";
+        StatusText.Text = "صفحه اصلی SmartDesk V5";
         Title = "میزکار هوشمند";
     }
 }
