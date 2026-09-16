@@ -1,0 +1,81 @@
+name: Capture SmartDesk V6 UI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/reference-ui-v6]
+    paths:
+      - '.github/workflows/v6-ui-screenshot.yml'
+
+jobs:
+  screenshot:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Ensure Vazirmatn font resource
+        shell: pwsh
+        run: |
+          $fontDir = 'src/SmartDesk/Resources/Fonts'
+          New-Item -ItemType Directory -Force -Path $fontDir | Out-Null
+          if (-not (Test-Path "$fontDir/Vazirmatn.ttf")) {
+            Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/google/fonts/main/ofl/vazirmatn/Vazirmatn%5Bwght%5D.ttf' -OutFile "$fontDir/Vazirmatn.ttf"
+          }
+
+      - name: Publish V6
+        shell: pwsh
+        run: dotnet publish src/SmartDesk/SmartDesk.csproj -c Release -r win-x64 --self-contained true -o publish
+
+      - name: Launch SmartDesk and capture real window
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD 'publish/SmartDesk.exe'
+          if (-not (Test-Path $exe)) { throw "SmartDesk.exe not found" }
+          $p = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 12
+
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          Add-Type @'
+          using System;
+          using System.Runtime.InteropServices;
+          public static class Win32Shot {
+            [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+            [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+          }
+          '@
+
+          $p.Refresh()
+          if ($p.HasExited) { throw "SmartDesk exited before screenshot" }
+          if ($p.MainWindowHandle -ne 0) {
+            [Win32Shot]::ShowWindow($p.MainWindowHandle, 3) | Out-Null
+            [Win32Shot]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
+            Start-Sleep -Seconds 3
+          }
+
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          New-Item -ItemType Directory -Force -Path screenshots | Out-Null
+          $out = Join-Path $PWD 'screenshots/SmartDesk-V6-real.png'
+          $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
+          $g.Dispose()
+          $bmp.Dispose()
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          if (-not (Test-Path $out)) { throw "Screenshot was not created" }
+
+      - name: Upload real screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartDesk-V6-Real-Screenshot
+          path: screenshots/SmartDesk-V6-real.png
+          if-no-files-found: error
+          retention-days: 7
