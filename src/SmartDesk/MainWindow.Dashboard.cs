@@ -20,8 +20,8 @@ public partial class MainWindow
         _dashboardView = new DashboardView();
         _dashboardView.SetQuickLinks(_quickLinks);
         _dashboardView.QuickLinkRequested += Dashboard_QuickLinkRequested;
-        _dashboardView.CalendarRequested += (_, _) => OpenPlanner();
-        _dashboardView.NotesRemindersRequested += (_, _) => OpenPlanner();
+        _dashboardView.AddLinkRequested += Dashboard_AddLinkRequested;
+        _dashboardView.PlannerRequested += (_, _) => OpenPlanner();
         _dashboardView.ThemeRequested += Dashboard_ThemeRequested;
 
         _dashboardTab = new TabItem
@@ -41,11 +41,22 @@ public partial class MainWindow
         Title = "میزکار هوشمند";
     }
 
+    private void Dashboard_AddLinkRequested(object? sender, EventArgs e)
+    {
+        var dialog = new QuickLinkEditorWindow { Owner = this };
+        if (dialog.ShowDialog() != true || dialog.Result is null) return;
+        dialog.Result.SortOrder = _quickLinks.Count == 0 ? 0 : _quickLinks.Max(item => item.SortOrder) + 1;
+        _quickLinks.Add(dialog.Result);
+        SaveQuickLinks();
+        _dashboardView?.SetQuickLinks(_quickLinks);
+        StatusText.Text = "لینک سریع جدید ذخیره شد.";
+    }
+
     private void OpenPlanner()
     {
         var window = new PersianPlannerWindow(_data, _dataService) { Owner = this };
         window.ShowDialog();
-        StatusText.Text = "تقویم شمسی، یادداشت‌ها و یادآورها به‌روز شدند.";
+        StatusText.Text = "برنامه‌ریز به‌روز شد.";
     }
 
     private void Dashboard_ThemeRequested(object? sender, string theme)
@@ -67,10 +78,7 @@ public partial class MainWindow
             return;
         }
 
-        var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url)
-        {
-            Owner = this
-        };
+        var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url) { Owner = this };
         StatusText.Text = $"«{link.Title}» در نمای تمام‌صفحه SmartDesk باز شد.";
         browserWindow.ShowDialog();
         ShowDashboard();
