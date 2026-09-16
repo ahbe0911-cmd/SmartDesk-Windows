@@ -13,6 +13,8 @@ public partial class DashboardView : UserControl
     private readonly DispatcherTimer _clockTimer;
 
     public event EventHandler<QuickLink>? QuickLinkRequested;
+    public event EventHandler<QuickLink>? EditLinkRequested;
+    public event EventHandler<QuickLink>? DeleteLinkRequested;
     public event EventHandler? AddLinkRequested;
     public event EventHandler? PlannerRequested;
     public event EventHandler<string>? ThemeRequested;
@@ -31,6 +33,9 @@ public partial class DashboardView : UserControl
     {
         _links.Clear();
         foreach (var link in links.OrderBy(x => x.SortOrder).Take(7)) _links.Add(link);
+        QuickLinkCountText.Text = $"{_links.Count} از ۷";
+        AddLinkButton.IsEnabled = _links.Count < 7;
+        AddLinkButton.ToolTip = _links.Count < 7 ? "افزودن میانبر جدید" : "حداکثر ۷ لینک سریع ثبت شده است";
     }
 
     private void UpdateClock()
@@ -45,6 +50,18 @@ public partial class DashboardView : UserControl
     private void QuickLinkCard_Click(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.Tag is QuickLink link) QuickLinkRequested?.Invoke(this, link);
+    }
+
+    private void EditLink_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is QuickLink link) EditLinkRequested?.Invoke(this, link);
+        e.Handled = true;
+    }
+
+    private void DeleteLink_Click(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is QuickLink link) DeleteLinkRequested?.Invoke(this, link);
+        e.Handled = true;
     }
 
     private void AddLink_Click(object sender, RoutedEventArgs e) => AddLinkRequested?.Invoke(this, EventArgs.Empty);
