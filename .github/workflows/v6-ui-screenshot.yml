@@ -6,6 +6,10 @@ on:
     branches: [feature/reference-ui-v6]
     paths:
       - '.github/workflows/v6-ui-screenshot.yml'
+      - 'tools/SmartDesk.UiCapture/**'
+      - 'src/SmartDesk/Views/DashboardView.xaml'
+      - 'src/SmartDesk/Views/DashboardView.xaml.cs'
+      - 'src/SmartDesk/Views/AnalogClockControl.cs'
 
 jobs:
   screenshot:
@@ -13,10 +17,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 
@@ -29,52 +33,28 @@ jobs:
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/google/fonts/main/ofl/vazirmatn/Vazirmatn%5Bwght%5D.ttf' -OutFile "$fontDir/Vazirmatn.ttf"
           }
 
-      - name: Publish V6
+      - name: Build real WPF capture harness
         shell: pwsh
-        run: dotnet publish src/SmartDesk/SmartDesk.csproj -c Release -r win-x64 --self-contained true -o publish
+        run: dotnet build tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release
 
-      - name: Launch SmartDesk and capture real window
+      - name: Render actual V6 DashboardView
+        shell: pwsh
+        run: dotnet run --project tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release --no-build
+
+      - name: Collect rendered PNG
         shell: pwsh
         run: |
-          $exe = Join-Path $PWD 'publish/SmartDesk.exe'
-          if (-not (Test-Path $exe)) { throw "SmartDesk.exe not found" }
-          $p = Start-Process -FilePath $exe -PassThru
-          Start-Sleep -Seconds 12
-          Add-Type -AssemblyName System.Windows.Forms
-          Add-Type -AssemblyName System.Drawing
-          Add-Type @'
-          using System;
-          using System.Runtime.InteropServices;
-          public static class Win32Shot {
-            [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
-            [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-          }
-          '@
-          $p.Refresh()
-          if ($p.HasExited) { throw "SmartDesk exited before screenshot" }
-          if ($p.MainWindowHandle -ne 0) {
-            [Win32Shot]::ShowWindow($p.MainWindowHandle, 3) | Out-Null
-            [Win32Shot]::SetForegroundWindow($p.MainWindowHandle) | Out-Null
-            Start-Sleep -Seconds 3
-          }
-          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-          $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
-          $g = [System.Drawing.Graphics]::FromImage($bmp)
-          $g.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $shot = Get-ChildItem -Path tools/SmartDesk.UiCapture/bin/Release -Filter 'SmartDesk-V6-real-render.png' -Recurse | Select-Object -First 1
+          if (-not $shot) { throw 'Rendered V6 screenshot was not created.' }
           New-Item -ItemType Directory -Force -Path screenshots | Out-Null
-          $out = Join-Path $PWD 'screenshots/SmartDesk-V6-real.png'
-          $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
-          $g.Dispose()
-          $bmp.Dispose()
-          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
-          if (-not (Test-Path $out)) { throw "Screenshot was not created" }
+          Copy-Item $shot.FullName screenshots/SmartDesk-V6-real-render.png
+          Write-Host "Captured: $($shot.FullName)"
+          Write-Host "Size: $($shot.Length) bytes"
 
-      - name: Upload real screenshot
+      - name: Upload real rendered screenshot
         uses: actions/upload-artifact@v4
         with:
-          name: SmartDesk-V6-Real-Screenshot
-          path: screenshots/SmartDesk-V6-real.png
+          name: SmartDesk-V6-Real-Rendered-Screenshot
+          path: screenshots/SmartDesk-V6-real-render.png
           if-no-files-found: error
           retention-days: 7
-
-# capture-trigger: 2026-09-17-v1
