@@ -59,10 +59,21 @@ public partial class MainWindow
 
     private void QuickLinks_CollectionChangedForDashboard(object? sender, NotifyCollectionChangedEventArgs e) => _dashboardView?.SetQuickLinks(_quickLinks);
 
-    private async void Dashboard_QuickLinkRequested(object? sender, QuickLink link)
+    private void Dashboard_QuickLinkRequested(object? sender, QuickLink link)
     {
-        var browser = await CreateTabAsync(link.Url, activate: true);
-        if (browser is not null) StatusText.Text = $"«{link.Title}» در SmartDesk باز شد.";
+        if (_browserEnvironment is null)
+        {
+            StatusText.Text = "مرورگر داخلی هنوز آماده نیست.";
+            return;
+        }
+
+        var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url)
+        {
+            Owner = this
+        };
+        StatusText.Text = $"«{link.Title}» در نمای تمام‌صفحه SmartDesk باز شد.";
+        browserWindow.ShowDialog();
+        ShowDashboard();
     }
 
     private void DashboardHomeButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
