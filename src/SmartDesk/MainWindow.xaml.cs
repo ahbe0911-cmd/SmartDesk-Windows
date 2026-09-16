@@ -80,8 +80,7 @@ public partial class MainWindow : Window
                 BrowserTabs.SelectedIndex = 0;
             }
 
-            EnableDashboardV2();
-            StatusText.Text = "داشبورد SmartDesk آماده است.";
+            StatusText.Text = "مرورگر آماده است.";
         }
         catch (WebView2RuntimeNotFoundException ex)
         {
@@ -144,45 +143,76 @@ public partial class MainWindow : Window
 
     private object CreateTabHeader(TabItem tab, string title)
     {
-        var panel = new StackPanel { Orientation = Orientation.Horizontal };
-        var titleBlock = new TextBlock
+        var panel = new StackPanel
         {
-            Text = Shorten(title, 28),
-            MinWidth = 90,
-            MaxWidth = 180,
-            VerticalAlignment = VerticalAlignment.Center,
-            TextTrimming = TextTrimming.CharacterEllipsis
+            Orientation = Orientation.Horizontal,
+            FlowDirection = FlowDirection.LeftToRight
         };
+
+        var titleText = new TextBlock
+        {
+            Text = ShortenTitle(title),
+            MaxWidth = 175,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+            FlowDirection = FlowDirection.RightToLeft
+        };
+
         var closeButton = new Button
         {
             Content = "×",
+            Width = 25,
+            Height = 25,
+            Padding = new Thickness(0),
+            Margin = new Thickness(8, 0, 0, 0),
             Tag = tab,
-            Style = (Style)FindResource("TabCloseButtonStyle"),
             ToolTip = "بستن زبانه"
         };
+        closeButton.SetResourceReference(StyleProperty, "TinyActionButtonStyle");
         closeButton.Click += CloseTabButton_Click;
-        panel.Children.Add(titleBlock);
+
+        panel.Children.Add(titleText);
         panel.Children.Add(closeButton);
         return panel;
     }
 
-    private static string Shorten(string? value, int maxLength)
+    private async void Browser_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
     {
-        var text = string.IsNullOrWhiteSpace(value) ? "زبانه جدید" : value.Trim();
-        return text.Length <= maxLength ? text : text[..(maxLength - 1)] + "…";
+        var deferral = e.GetDeferral();
+        try
+        {
+            var newBrowser = await CreateTabAsync(null, activate: true);
+            if (newBrowser?.CoreWebView is not null)
+            {
+                e.NewWindow = newBrowser.CoreWebView;
+            }
+            else
+            {
+                e.Handled = true;
+                if (!string.IsNullOrWhiteSpace(e.Uri))
+                {
+                    await CreateTabAsync(e.Uri, activate: true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            e.Handled = true;
+            AppLogger.Error(ex, "بازکردن پنجره جدید سایت");
+        }
+        finally
+        {
+            deferral.Complete();
+        }
     }
 
-    private void Browser_TitleChanged(object? sender, string title)
+    private void Browser_TitleChanged(BrowserTabView browser, string title)
     {
-        if (sender is not BrowserTabView browser)
-        {
-            return;
-        }
-
         var tab = BrowserTabs.Items.OfType<TabItem>().FirstOrDefault(item => ReferenceEquals(item.Tag, browser));
-        if (tab?.Header is StackPanel panel && panel.Children.OfType<TextBlock>().FirstOrDefault() is { } titleBlock)
+        if (tab?.Header is StackPanel panel && panel.Children.OfType<TextBlock>().FirstOrDefault() is { } titleText)
         {
-            titleBlock.Text = Shorten(title, 28);
+            titleText.Text = ShortenTitle(title);
+            titleText.ToolTip = title;
         }
 
         if (ReferenceEquals(CurrentBrowser, browser))
@@ -191,100 +221,103 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Browser_NavigationStateChanged(object? sender, BrowserNavigationState state)
+    private void Browser_NavigationStateChanged(BrowserTabView browser)
     {
-        if (!ReferenceEquals(sender, CurrentBrowser))
+        if (ReferenceEquals(CurrentBrowser, browser))
         {
-            return;
+            UpdateNavigationControls();
         }
-
-        AddressBox.Text = state.Address;
-        BackButton.IsEnabled = state.CanGoBack;
-        ForwardButton.IsEnabled = state.CanGoForward;
-        StatusText.Text = state.IsLoading ? "در حال بارگذاری…" : "آماده";
     }
 
-    private void Browser_StatusMessage(object? sender, string message)
+    private void Browser_StatusMessage(BrowserTabView browser, string message)
     {
-        if (ReferenceEquals(sender, CurrentBrowser))
+        if (ReferenceEquals(CurrentBrowser, browser))
         {
             StatusText.Text = message;
         }
     }
 
-    private async void Browser_NewWindowRequested(object? sender, string address)
+    private void UpdateNavigationControls()
     {
-        await CreateTabAsync(address, true);
+        var browser = CurrentBrowser;
+        BackButton.IsEnabled = browser?.CanGoBack == true;
+        ForwardButton.IsEnabled = browser?.CanGoForward == true;
+        ReloadButton.IsEnabled = browser is not null;
+        ExternalButton.IsEnabled = browser is not null;
+
+        if (browser is null)
+        {
+            AddressBox.Text = string.Empty;
+            SecurityText.Text = "●";
+            SecurityText.SetResourceReference(TextBlock.ForegroundProperty, "TextMutedBrush");
+            return;
+        }
+
+        AddressBox.Text = browser.CurrentUrl;
+        if (Uri.TryCreate(browser.CurrentUrl, UriKind.Absolute, out var uri) &&
+            uri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            SecurityText.Text = "●";
+            SecurityText.SetResourceReference(TextBlock.ForegroundProperty, "SuccessBrush");
+            SecurityText.ToolTip = "اتصال HTTPS";
+        }
+        else
+        {
+            SecurityText.Text = "●";
+            SecurityText.SetResourceReference(TextBlock.ForegroundProperty, "TextMutedBrush");
+            SecurityText.ToolTip = "اتصال معمولی یا صفحه داخلی";
+        }
     }
 
     private void BrowserTabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (CurrentBrowser is not { } browser)
+        UpdateNavigationControls();
+        if (CurrentBrowser is { } browser)
         {
-            BackButton.IsEnabled = false;
-            ForwardButton.IsEnabled = false;
-            return;
+            Title = $"{browser.PageTitle} — میزکار هوشمند";
         }
-
-        AddressBox.Text = browser.Address;
-        BackButton.IsEnabled = browser.CanGoBack;
-        ForwardButton.IsEnabled = browser.CanGoForward;
-        Title = $"{browser.Title} — میزکار هوشمند";
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e) => CurrentBrowser?.GoBack();
-
     private void ForwardButton_Click(object sender, RoutedEventArgs e) => CurrentBrowser?.GoForward();
-
     private void ReloadButton_Click(object sender, RoutedEventArgs e) => CurrentBrowser?.Reload();
-
     private void HomeButton_Click(object sender, RoutedEventArgs e) => CurrentBrowser?.Navigate(_data.Settings.HomeUrl);
-
-    private async void NewTabButton_Click(object sender, RoutedEventArgs e) => await CreateTabAsync(_data.Settings.HomeUrl, true);
-
     private void GoButton_Click(object sender, RoutedEventArgs e) => NavigateFromAddressBar();
+
+    private async void NewTabButton_Click(object sender, RoutedEventArgs e) =>
+        await CreateTabAsync(_data.Settings.HomeUrl, activate: true);
 
     private void AddressBox_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter)
         {
             NavigateFromAddressBar();
+            e.Handled = true;
         }
     }
+
+    private void AddressBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e) => AddressBox.SelectAll();
 
     private void NavigateFromAddressBar()
     {
-        var browser = CurrentBrowser;
-        if (browser is null)
-        {
-            return;
-        }
-
-        if (BrowserUriService.TryNormalize(AddressBox.Text, out var address))
-        {
-            browser.Navigate(address);
-        }
-        else
-        {
-            StatusText.Text = "نشانی واردشده معتبر نیست.";
-        }
+        CurrentBrowser?.Navigate(AddressBox.Text);
+        Keyboard.ClearFocus();
     }
 
-    private void OpenExternalButton_Click(object sender, RoutedEventArgs e)
+    private void ExternalButton_Click(object sender, RoutedEventArgs e)
     {
-        if (CurrentBrowser is null || !BrowserUriService.TryNormalize(CurrentBrowser.Address, out var address))
-        {
-            return;
-        }
-
         try
         {
-            Process.Start(new ProcessStartInfo(address) { UseShellExecute = true });
+            if (CurrentBrowser is { } browser && Uri.TryCreate(browser.CurrentUrl, UriKind.Absolute, out var uri) &&
+                uri.Scheme is "http" or "https")
+            {
+                BrowserUriService.OpenExternal(uri);
+            }
         }
         catch (Exception ex)
         {
-            AppLogger.Error(ex, "باز کردن مرورگر پیش‌فرض");
-            StatusText.Text = "باز کردن مرورگر پیش‌فرض انجام نشد.";
+            AppLogger.Error(ex, "بازکردن صفحه در مرورگر پیش‌فرض");
+            StatusText.Text = "مرورگر پیش‌فرض ویندوز باز نشد.";
         }
     }
 
@@ -293,10 +326,11 @@ public partial class MainWindow : Window
         if ((sender as FrameworkElement)?.Tag is TabItem tab)
         {
             CloseTab(tab);
+            e.Handled = true;
         }
     }
 
-    private void CloseTab(TabItem tab)
+    private async void CloseTab(TabItem tab)
     {
         if (tab.Tag is BrowserTabView browser)
         {
@@ -304,9 +338,9 @@ public partial class MainWindow : Window
         }
 
         BrowserTabs.Items.Remove(tab);
-        if (BrowserTabs.Items.Count == 0)
+        if (!_isClosing && BrowserTabs.Items.Count == 0)
         {
-            _ = CreateTabAsync(_data.Settings.HomeUrl, true);
+            await CreateTabAsync(_data.Settings.HomeUrl, activate: true);
         }
     }
 
@@ -317,29 +351,29 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (_data.Settings.OpenLinksInNewTab || Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        if (_data.Settings.OpenQuickLinksInNewTab || Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
         {
-            await CreateTabAsync(link.Url, true);
+            await CreateTabAsync(link.Url, activate: true);
         }
-        else if (CurrentBrowser is not null)
+        else if (CurrentBrowser is { } browser)
         {
-            CurrentBrowser.Navigate(link.Url);
+            browser.Navigate(link.Url);
         }
         else
         {
-            await CreateTabAsync(link.Url, true);
+            await CreateTabAsync(link.Url, activate: true);
         }
     }
 
-    private void AddQuickLinkButton_Click(object sender, RoutedEventArgs e)
+    private void AddQuickLink_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new QuickLinkDialog { Owner = this };
+        var dialog = new QuickLinkEditorWindow { Owner = this };
         if (dialog.ShowDialog() != true || dialog.Result is null)
         {
             return;
         }
 
-        dialog.Result.SortOrder = _quickLinks.Count;
+        dialog.Result.SortOrder = _quickLinks.Count == 0 ? 0 : _quickLinks.Max(item => item.SortOrder) + 1;
         _quickLinks.Add(dialog.Result);
         SaveQuickLinks();
         StatusText.Text = "میانبر جدید ذخیره شد.";
@@ -352,20 +386,19 @@ public partial class MainWindow : Window
             return;
         }
 
-        var dialog = new QuickLinkDialog(link) { Owner = this };
+        var dialog = new QuickLinkEditorWindow(link) { Owner = this };
         if (dialog.ShowDialog() != true || dialog.Result is null)
         {
             return;
         }
 
-        link.Title = dialog.Result.Title;
-        link.Url = dialog.Result.Url;
-        link.Category = dialog.Result.Category;
-        link.Icon = dialog.Result.Icon;
-        link.AccentHex = dialog.Result.AccentHex;
-        SaveQuickLinks();
-        _quickLinksView?.Refresh();
-        StatusText.Text = "میانبر ویرایش شد.";
+        var index = _quickLinks.IndexOf(link);
+        if (index >= 0)
+        {
+            _quickLinks[index] = dialog.Result;
+            SaveQuickLinks();
+            StatusText.Text = "تغییرات میانبر ذخیره شد.";
+        }
     }
 
     private void DeleteQuickLink_Click(object sender, RoutedEventArgs e)
@@ -379,7 +412,9 @@ public partial class MainWindow : Window
             $"میانبر «{link.Title}» حذف شود؟",
             "حذف میانبر",
             MessageBoxButton.YesNo,
-            MessageBoxImage.Question);
+            MessageBoxImage.Question,
+            MessageBoxResult.No);
+
         if (answer != MessageBoxResult.Yes)
         {
             return;
@@ -390,10 +425,7 @@ public partial class MainWindow : Window
         StatusText.Text = "میانبر حذف شد.";
     }
 
-    private void QuickLinkSearchBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        _quickLinksView?.Refresh();
-    }
+    private void QuickLinkSearchBox_TextChanged(object sender, TextChangedEventArgs e) => _quickLinksView?.Refresh();
 
     private void LoadQuickLinks()
     {
@@ -411,24 +443,20 @@ public partial class MainWindow : Window
                 return false;
             }
 
-            var search = QuickLinkSearchBox.Text?.Trim();
-            return string.IsNullOrWhiteSpace(search)
-                   || link.Title.Contains(search, StringComparison.CurrentCultureIgnoreCase)
-                   || link.Category.Contains(search, StringComparison.CurrentCultureIgnoreCase)
-                   || link.Url.Contains(search, StringComparison.OrdinalIgnoreCase);
+            var query = QuickLinkSearchBox?.Text?.Trim();
+            return string.IsNullOrWhiteSpace(query) ||
+                   link.Title.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+                   link.Category.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+                   link.Url.Contains(query, StringComparison.OrdinalIgnoreCase);
         };
         QuickLinksList.ItemsSource = _quickLinksView;
     }
 
     private void SaveQuickLinks()
     {
-        for (var index = 0; index < _quickLinks.Count; index++)
-        {
-            _quickLinks[index].SortOrder = index;
-        }
-
-        _data.QuickLinks = _quickLinks.ToList();
+        _data.QuickLinks = _quickLinks.OrderBy(item => item.SortOrder).ToList();
         _dataService.Save(_data);
+        _quickLinksView?.Refresh();
     }
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -440,12 +468,13 @@ public partial class MainWindow : Window
         }
 
         _data.Settings = dialog.Result;
-        _dataService.Save(_data);
         ThemeService.Apply(_data.Settings.Theme);
         foreach (var browser in BrowserTabs.Items.OfType<TabItem>().Select(item => item.Tag).OfType<BrowserTabView>())
         {
-            browser.ApplyTheme(_data.Settings.Theme);
+            browser.ApplyTheme();
         }
+
+        _dataService.Save(_data);
         StatusText.Text = "تنظیمات ذخیره شد.";
     }
 
@@ -453,10 +482,13 @@ public partial class MainWindow : Window
     {
         var dialog = new SaveFileDialog
         {
-            Title = "ذخیره نسخه پشتیبان",
-            Filter = "SmartDesk Backup (*.json)|*.json",
-            FileName = $"SmartDesk-Backup-{DateTime.Now:yyyyMMdd-HHmm}.json"
+            Title = "ذخیره نسخه پشتیبان SmartDesk",
+            Filter = "فایل پشتیبان SmartDesk (*.json)|*.json",
+            FileName = $"SmartDesk-Backup-{DateTime.Now:yyyy-MM-dd}.json",
+            AddExtension = true,
+            DefaultExt = ".json"
         };
+
         if (dialog.ShowDialog(this) != true)
         {
             return;
@@ -469,7 +501,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            AppLogger.Error(ex, "خروجی گرفتن از داده‌ها");
+            AppLogger.Error(ex, "خروجی نسخه پشتیبان");
             MessageBox.Show("ذخیره نسخه پشتیبان انجام نشد.", "خطا", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -478,10 +510,24 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFileDialog
         {
-            Title = "بازیابی نسخه پشتیبان",
-            Filter = "SmartDesk Backup (*.json)|*.json"
+            Title = "بازیابی نسخه پشتیبان SmartDesk",
+            Filter = "فایل پشتیبان SmartDesk (*.json)|*.json",
+            CheckFileExists = true
         };
+
         if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        var answer = MessageBox.Show(
+            "میانبرها و تنظیمات فعلی با اطلاعات فایل پشتیبان جایگزین شوند؟",
+            "بازیابی پشتیبان",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question,
+            MessageBoxResult.No);
+
+        if (answer != MessageBoxResult.Yes)
         {
             return;
         }
@@ -489,25 +535,18 @@ public partial class MainWindow : Window
         try
         {
             _data = _dataService.Import(dialog.FileName);
-            LoadQuickLinks();
             ThemeService.Apply(_data.Settings.Theme);
-            StatusText.Text = "نسخه پشتیبان بازیابی شد.";
+            LoadQuickLinks();
+            StatusText.Text = "نسخه پشتیبان با موفقیت بازیابی شد.";
         }
         catch (Exception ex)
         {
-            AppLogger.Error(ex, "بازیابی داده‌ها");
-            MessageBox.Show("فایل پشتیبان معتبر نیست یا قابل خواندن نیست.", "خطا", MessageBoxButton.OK, MessageBoxImage.Error);
+            AppLogger.Error(ex, "بازیابی نسخه پشتیبان");
+            MessageBox.Show("فایل انتخاب‌شده معتبر نیست یا خوانده نشد.", "خطا", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
-    private void UpdateClock()
-    {
-        var now = DateTime.Now;
-        PersianDateText.Text = PersianDateService.FormatDate(now);
-        TimeText.Text = PersianDateService.FormatTime(now);
-    }
-
-    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+    private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
         var control = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
         var alt = Keyboard.Modifiers.HasFlag(ModifierKeys.Alt);
@@ -520,7 +559,7 @@ public partial class MainWindow : Window
         }
         else if (control && e.Key == Key.T)
         {
-            _ = CreateTabAsync(_data.Settings.HomeUrl, true);
+            await CreateTabAsync(_data.Settings.HomeUrl, activate: true);
             e.Handled = true;
         }
         else if (control && e.Key == Key.W && BrowserTabs.SelectedItem is TabItem tab)
@@ -528,7 +567,7 @@ public partial class MainWindow : Window
             CloseTab(tab);
             e.Handled = true;
         }
-        else if (control && e.Key == Key.R || e.Key == Key.F5)
+        else if ((control && e.Key == Key.R) || e.Key == Key.F5)
         {
             CurrentBrowser?.Reload();
             e.Handled = true;
@@ -547,36 +586,47 @@ public partial class MainWindow : Window
 
     private void Window_Closing(object? sender, CancelEventArgs e)
     {
-        if (_isClosing)
-        {
-            return;
-        }
-
         _isClosing = true;
         _clockTimer.Stop();
 
-        var bounds = WindowState == WindowState.Normal
-            ? new Rect(Left, Top, ActualWidth, ActualHeight)
-            : RestoreBounds;
+        try
+        {
+            var bounds = WindowState == WindowState.Normal ? new Rect(Left, Top, Width, Height) : RestoreBounds;
+            _data.Settings.WindowWidth = Math.Max(MinWidth, bounds.Width);
+            _data.Settings.WindowHeight = Math.Max(MinHeight, bounds.Height);
+            _data.Settings.WindowMaximized = WindowState == WindowState.Maximized;
+            _data.Settings.LastOpenTabs = BrowserTabs.Items
+                .OfType<TabItem>()
+                .Select(item => item.Tag)
+                .OfType<BrowserTabView>()
+                .Select(browser => browser.CurrentUrl)
+                .Where(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https")
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Take(10)
+                .ToList();
+            _dataService.Save(_data);
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error(ex, "ذخیره وضعیت هنگام خروج");
+        }
 
-        _data.Settings.WindowWidth = Math.Max(MinWidth, bounds.Width);
-        _data.Settings.WindowHeight = Math.Max(MinHeight, bounds.Height);
-        _data.Settings.WindowMaximized = WindowState == WindowState.Maximized;
-        _data.Settings.LastOpenTabs = BrowserTabs.Items
-            .OfType<TabItem>()
-            .Select(item => item.Tag)
-            .OfType<BrowserTabView>()
-            .Select(browser => browser.Address)
-            .Where(address => BrowserUriService.TryNormalize(address, out _))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Take(10)
-            .ToList();
-        _data.QuickLinks = _quickLinks.ToList();
-        _dataService.Save(_data);
-
-        foreach (var browser in BrowserTabs.Items.OfType<TabItem>().Select(item => item.Tag).OfType<BrowserTabView>())
+        foreach (var browser in BrowserTabs.Items.OfType<TabItem>().Select(item => item.Tag).OfType<BrowserTabView>().ToList())
         {
             browser.DisposeBrowser();
         }
+    }
+
+    private void UpdateClock()
+    {
+        var now = DateTime.Now;
+        DateText.Text = PersianDateService.FormatDate(now);
+        TimeText.Text = PersianDateService.FormatTime(now);
+    }
+
+    private static string ShortenTitle(string? title)
+    {
+        var value = string.IsNullOrWhiteSpace(title) ? "زبانه جدید" : title.Trim();
+        return value.Length <= 32 ? value : value[..31] + "…";
     }
 }
