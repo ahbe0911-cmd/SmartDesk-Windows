@@ -32,7 +32,7 @@ public partial class MainWindow
             Header = "⌂  صفحه اصلی",
             Content = _dashboardView,
             Tag = _dashboardView,
-            Padding = new Thickness(16, 8)
+            Padding = new Thickness(16, 8, 16, 8)
         };
 
         BrowserTabs.Items.Insert(0, _dashboardTab);
