@@ -39,7 +39,7 @@ public partial class MainWindow
         _quickLinks.CollectionChanged += QuickLinks_CollectionChangedForDashboard;
         HomeButton.PreviewMouseLeftButtonDown += DashboardHomeButton_PreviewMouseLeftButtonDown;
         WindowsReminderService.RescheduleAll(_data.Reminders);
-        StatusText.Text = "داشبورد SmartDesk V7 آماده است.";
+        StatusText.Text = "داشبورد SmartDesk V8 آماده است.";
         Title = "میزکار هوشمند";
     }
 
@@ -126,7 +126,7 @@ public partial class MainWindow
         if (_dashboardTab is null) return;
         BrowserTabs.SelectedItem = _dashboardTab;
         AddressBox.Text = string.Empty;
-        StatusText.Text = "صفحه اصلی SmartDesk V7";
+        StatusText.Text = "صفحه اصلی SmartDesk V8";
         Title = "میزکار هوشمند";
     }
 }
