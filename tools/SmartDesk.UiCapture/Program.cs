@@ -30,7 +30,7 @@ internal static class Program
 
         var window = new Window
         {
-            Title = "SmartDesk V6 Render Capture",
+            Title = "SmartDesk V7 Render Capture",
             Width = 1536,
             Height = 1024,
             WindowStyle = WindowStyle.None,
@@ -60,7 +60,7 @@ internal static class Program
         encoder.Frames.Add(BitmapFrame.Create(bitmap));
         var outDir = Path.Combine(AppContext.BaseDirectory, "screenshots");
         Directory.CreateDirectory(outDir);
-        var outPath = Path.Combine(outDir, "SmartDesk-V6-real-render.png");
+        var outPath = Path.Combine(outDir, "SmartDesk-V7-real-render.png");
         using (var fs = File.Create(outPath)) encoder.Save(fs);
         Console.WriteLine(outPath);
         window.Close();
