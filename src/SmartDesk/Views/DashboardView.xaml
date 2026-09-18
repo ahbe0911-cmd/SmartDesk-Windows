@@ -5,13 +5,13 @@
  FlowDirection="RightToLeft" FontFamily="./Resources/Fonts/#Far.Nazanin" Background="Transparent">
  <UserControl.Resources>
   <DropShadowEffect x:Key="Shadow" BlurRadius="22" ShadowDepth="2" Opacity="0.10"/>
-  <Style x:Key="Card" TargetType="Border"><Setter Property="Background" Value="#FCFDFD"/><Setter Property="CornerRadius" Value="18"/><Setter Property="Padding" Value="16"/><Setter Property="Effect" Value="{StaticResource Shadow}"/></Style>
+  <Style x:Key="Card" TargetType="Border"><Setter Property="Background" Value="#F5FFFFFF"/><Setter Property="CornerRadius" Value="22"/><Setter Property="Padding" Value="16"/><Setter Property="BorderBrush" Value="#7FFFFFFF"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Effect" Value="{StaticResource Shadow}"/></Style>
   <Style x:Key="SoftButton" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}"><Setter Property="FontFamily" Value="Vazirmatn"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="11,8"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
   <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}"><Setter Property="FontFamily" Value="Vazirmatn"/><Setter Property="Height" Value="52"/><Setter Property="Margin" Value="16,4"/><Setter Property="Padding" Value="18,0"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Foreground" Value="#F3FAFA"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/><Setter Property="FontSize" Value="15"/></Style>
  </UserControl.Resources>
 
  <Grid FlowDirection="LeftToRight"><Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#D9D7E4DC" Offset="0"/><GradientStop Color="#BFA6B7A9" Offset=".42"/><GradientStop Color="#D96B7D73" Offset="1"/></LinearGradientBrush></Grid.Background>
-  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="350"/></Grid.ColumnDefinitions>
+  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
 
   <!-- MAIN WORKSPACE -->
   <Grid Grid.Column="0">
@@ -37,17 +37,17 @@
    </Border>
 
    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-    <Grid Margin="26,18,26,14">
+    <Grid Margin="22,16,22,14">
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="116"/></Grid.RowDefinitions>
      <Grid FlowDirection="LeftToRight">
-      <Grid.ColumnDefinitions><ColumnDefinition Width="31*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="43*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="26*"/></Grid.ColumnDefinitions>
+      <Grid.ColumnDefinitions><ColumnDefinition Width="30*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="47*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="23*"/></Grid.ColumnDefinitions>
 
       <!-- LEFT: clock/calendar/weather -->
       <Grid Grid.Column="0">
        <Grid.RowDefinitions><RowDefinition Height="212"/><RowDefinition Height="14"/><RowDefinition Height="284"/><RowDefinition Height="14"/><RowDefinition Height="142"/></Grid.RowDefinitions>
        <Border Grid.Row="0" Style="{StaticResource Card}" Padding="0">
         <Grid FlowDirection="LeftToRight"><Grid.ColumnDefinitions><ColumnDefinition Width="48*"/><ColumnDefinition Width="52*"/></Grid.ColumnDefinitions>
-         <Border CornerRadius="18,0,0,18"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#071F20"/><GradientStop Color="#0E4540" Offset="1"/></LinearGradientBrush></Border.Background><local:AnalogClockControl Margin="14"/></Border>
+         <Border CornerRadius="22,0,0,22"><Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#071F20"/><GradientStop Color="#0E4540" Offset="1"/></LinearGradientBrush></Border.Background><local:AnalogClockControl Margin="14"/></Border>
          <StackPanel Grid.Column="1" Margin="18" VerticalAlignment="Center" FlowDirection="RightToLeft">
           <TextBlock x:Name="DashboardTimeText" FontSize="36" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Foreground="#111D21"/>
           <TextBlock Text="سه‌شنبه" Margin="0,8,0,0" FontSize="14" FontWeight="SemiBold" Foreground="#34454B"/>
@@ -140,15 +140,15 @@
   </Grid>
 
   <!-- RIGHT QUICK ACCESS SIDEBAR -->
-  <Border Grid.Column="1" Margin="12" CornerRadius="24" Background="#E6072025" BorderBrush="#557A8C91" BorderThickness="1">
+  <Border Grid.Column="1" Margin="12" CornerRadius="26" Background="#F20A292D" BorderBrush="#557A8C91" BorderThickness="1">
    <Grid Margin="14">
     <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="62"/><RowDefinition Height="32"/></Grid.RowDefinitions>
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
      <ItemsControl x:Name="SidebarQuickLinks">
       <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate><DataTemplate>
-       <Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="5" MinHeight="104" Style="{StaticResource SoftButton}" Background="#2BFFFFFF" BorderBrush="#5AFFFFFF" BorderThickness="1">
-        <StackPanel><Border Width="44" Height="44" CornerRadius="14" Background="#36FFFFFF"><TextBlock Text="{Binding Icon}" FontSize="21" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="{Binding Title}" Foreground="White" Margin="0,9,0,0" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/></StackPanel>
+       <Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="6" MinHeight="112" Style="{StaticResource SoftButton}" Background="#334C6668" BorderBrush="#668AA4A5" BorderThickness="1">
+        <StackPanel VerticalAlignment="Center"><Border Width="48" Height="48" CornerRadius="16" Background="#40FFFFFF" BorderBrush="#44FFFFFF" BorderThickness="1"><TextBlock Text="{Binding Icon}" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="{Binding Title}" Foreground="White" Margin="0,10,0,0" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/></StackPanel>
        </Button>
       </DataTemplate></ItemsControl.ItemTemplate>
      </ItemsControl>
