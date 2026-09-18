@@ -1,26 +1,29 @@
 <Window x:Class="SmartDesk.Views.QuickLinkBrowserWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- Title="SmartDesk" WindowState="Maximized" WindowStyle="None" ResizeMode="NoResize"
- Background="{DynamicResource WindowBackgroundBrush}" FlowDirection="RightToLeft"
- FontFamily="./Resources/Fonts/#Vazirmatn" KeyDown="Window_KeyDown">
- <Grid>
-  <Grid.RowDefinitions><RowDefinition Height="70"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-  <Border Grid.Row="0" Background="{DynamicResource ElevatedBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="16,11">
-   <Grid>
-    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-    <Button x:Name="CloseButton" Grid.Column="0" Content="✕  بازگشت به میزکار" Padding="18,10" Margin="0,0,10,0" Style="{StaticResource PrimaryButtonStyle}" Click="Close_Click"/>
-    <Button x:Name="BackButton" Grid.Column="1" Content="←" ToolTip="عقب" Width="46" Margin="0,0,6,0" Style="{StaticResource SecondaryButtonStyle}" Click="Back_Click"/>
-    <Button x:Name="ForwardButton" Grid.Column="2" Content="→" ToolTip="جلو" Width="46" Margin="0,0,12,0" Style="{StaticResource SecondaryButtonStyle}" Click="Forward_Click"/>
-    <Border Grid.Column="3" CornerRadius="17" Background="{DynamicResource InputBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="16,10">
-     <Grid FlowDirection="LeftToRight"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="●" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center"/><TextBlock x:Name="AddressText" Grid.Column="1" Margin="10,0,0,0" FlowDirection="LeftToRight" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"/></Grid>
-    </Border>
-    <Button Grid.Column="4" Content="↻" ToolTip="بارگذاری مجدد" Width="46" Margin="12,0,6,0" Style="{StaticResource SecondaryButtonStyle}" Click="Reload_Click"/>
-    <Button Grid.Column="5" Content="↗ مرورگر خارجی" Padding="15,10" Style="{StaticResource SecondaryButtonStyle}" Click="External_Click"/>
-   </Grid>
-  </Border>
-  <Border Grid.Row="1" Margin="8" CornerRadius="14" Background="White" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
-   <Grid x:Name="BrowserHost"/>
-  </Border>
- </Grid>
+ Title="SmartDesk" WindowStartupLocation="CenterOwner" WindowStyle="None"
+ ResizeMode="CanResize" ShowInTaskbar="False" AllowsTransparency="True"
+ Background="Transparent" FlowDirection="RightToLeft"
+ FontFamily="Vazirmatn" KeyDown="Window_KeyDown">
+ <Border Margin="18" CornerRadius="24" Background="{DynamicResource WindowBackgroundBrush}"
+         BorderBrush="#6699B8C0" BorderThickness="1" ClipToBounds="True">
+  <Border.Effect><DropShadowEffect BlurRadius="36" ShadowDepth="8" Opacity=".34"/></Border.Effect>
+  <Grid>
+   <Grid.RowDefinitions><RowDefinition Height="64"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+   <Border Grid.Row="0" Background="{DynamicResource ElevatedBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="14,9">
+    <Grid>
+     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+     <Button x:Name="CloseButton" Grid.Column="0" Content="✕  بستن" Padding="16,9" Margin="0,0,8,0" Style="{StaticResource PrimaryButtonStyle}" Click="Close_Click"/>
+     <Button x:Name="BackButton" Grid.Column="1" Content="←" ToolTip="عقب" Width="44" Margin="0,0,5,0" Style="{StaticResource SecondaryButtonStyle}" Click="Back_Click"/>
+     <Button x:Name="ForwardButton" Grid.Column="2" Content="→" ToolTip="جلو" Width="44" Margin="0,0,10,0" Style="{StaticResource SecondaryButtonStyle}" Click="Forward_Click"/>
+     <Border Grid.Column="3" CornerRadius="16" Background="{DynamicResource InputBackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="14,9">
+      <Grid FlowDirection="LeftToRight"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Text="●" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center"/><TextBlock x:Name="AddressText" Grid.Column="1" Margin="10,0,0,0" FlowDirection="LeftToRight" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}"/></Grid>
+     </Border>
+     <Button Grid.Column="4" Content="↻" ToolTip="بارگذاری مجدد" Width="44" Margin="10,0,5,0" Style="{StaticResource SecondaryButtonStyle}" Click="Reload_Click"/>
+     <Button Grid.Column="5" Content="↗ مرورگر خارجی" Padding="14,9" Style="{StaticResource SecondaryButtonStyle}" Click="External_Click"/>
+    </Grid>
+   </Border>
+   <Border Grid.Row="1" Margin="10" CornerRadius="16" Background="White" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True"><Grid x:Name="BrowserHost"/></Border>
+  </Grid>
+ </Border>
 </Window>
