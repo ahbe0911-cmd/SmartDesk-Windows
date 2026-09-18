@@ -1,9 +1,9 @@
-name: Capture SmartDesk V6 UI
+name: Capture SmartDesk V7 UI
 
 on:
   workflow_dispatch:
   push:
-    branches: [feature/reference-ui-v6]
+    branches: [feature/reference-ui-v7]
     paths:
       - '.github/workflows/v6-ui-screenshot.yml'
       - 'tools/SmartDesk.UiCapture/**'
@@ -18,12 +18,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
-
       - name: Ensure Vazirmatn font resource
         shell: pwsh
         run: |
@@ -32,29 +30,25 @@ jobs:
           if (-not (Test-Path "$fontDir/Vazirmatn.ttf")) {
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/google/fonts/main/ofl/vazirmatn/Vazirmatn%5Bwght%5D.ttf' -OutFile "$fontDir/Vazirmatn.ttf"
           }
-
       - name: Build real WPF capture harness
         shell: pwsh
         run: dotnet build tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release
-
-      - name: Render actual V6 DashboardView
+      - name: Render actual V7 DashboardView
         shell: pwsh
         run: dotnet run --project tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release --no-build
-
       - name: Collect rendered PNG
         shell: pwsh
         run: |
-          $shot = Get-ChildItem -Path tools/SmartDesk.UiCapture/bin/Release -Filter 'SmartDesk-V6-real-render.png' -Recurse | Select-Object -First 1
-          if (-not $shot) { throw 'Rendered V6 screenshot was not created.' }
+          $shot = Get-ChildItem -Path tools/SmartDesk.UiCapture/bin/Release -Filter 'SmartDesk-V7-real-render.png' -Recurse | Select-Object -First 1
+          if (-not $shot) { throw 'Rendered V7 screenshot was not created.' }
           New-Item -ItemType Directory -Force -Path screenshots | Out-Null
-          Copy-Item $shot.FullName screenshots/SmartDesk-V6-real-render.png
+          Copy-Item $shot.FullName screenshots/SmartDesk-V7-real-render.png
           Write-Host "Captured: $($shot.FullName)"
           Write-Host "Size: $($shot.Length) bytes"
-
       - name: Upload real rendered screenshot
         uses: actions/upload-artifact@v4
         with:
-          name: SmartDesk-V6-Real-Rendered-Screenshot
-          path: screenshots/SmartDesk-V6-real-render.png
+          name: SmartDesk-V7-Real-Rendered-Screenshot
+          path: screenshots/SmartDesk-V7-real-render.png
           if-no-files-found: error
           retention-days: 7
