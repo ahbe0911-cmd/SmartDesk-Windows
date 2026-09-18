@@ -19,12 +19,26 @@ public partial class QuickLinkBrowserWindow : Window
         _initialUrl = url;
         Title = string.IsNullOrWhiteSpace(title) ? "SmartDesk" : $"{title} - SmartDesk";
         BrowserHost.Children.Add(_browser);
-        Loaded += Window_Loaded;\n        SourceInitialized += (_, _) => FitToOwner();
+        Loaded += Window_Loaded;
+        SourceInitialized += (_, _) => FitToOwner();
         Closed += (_, _) => _browser.DisposeBrowser();
+    }
+
+    private void FitToOwner()
+    {
+        var owner = Owner;
+        var work = SystemParameters.WorkArea;
+        var width = owner is null ? work.Width * 0.90 : owner.ActualWidth * 0.90;
+        var height = owner is null ? work.Height * 0.90 : owner.ActualHeight * 0.90;
+        Width = Math.Min(work.Width - 36, Math.Max(760, width));
+        Height = Math.Min(work.Height - 36, Math.Max(560, height));
+        MaxWidth = work.Width - 20;
+        MaxHeight = work.Height - 20;
     }
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        FitToOwner();
         try
         {
             _browser.NavigationStateChanged += Browser_NavigationStateChanged;
