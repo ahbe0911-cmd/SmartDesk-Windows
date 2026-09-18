@@ -11,7 +11,7 @@
  </UserControl.Resources>
 
  <Grid FlowDirection="LeftToRight"><Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#D9D7E4DC" Offset="0"/><GradientStop Color="#BFA6B7A9" Offset=".42"/><GradientStop Color="#D96B7D73" Offset="1"/></LinearGradientBrush></Grid.Background>
-  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="300"/></Grid.ColumnDefinitions>
+  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
 
   <!-- MAIN WORKSPACE -->
   <Grid Grid.Column="0">
@@ -36,11 +36,10 @@
     </Grid>
    </Border>
 
-   <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-    <Grid Margin="22,16,22,14">
+   <Grid Grid.Row="1" Margin="22,16,22,14">
      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="116"/></Grid.RowDefinitions>
      <Grid FlowDirection="LeftToRight">
-      <Grid.ColumnDefinitions><ColumnDefinition Width="30*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="47*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="23*"/></Grid.ColumnDefinitions>
+      <Grid.ColumnDefinitions><ColumnDefinition Width="31*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="69*"/></Grid.ColumnDefinitions>
 
       <!-- LEFT: clock/calendar/weather -->
       <Grid Grid.Column="0">
@@ -76,7 +75,7 @@
        <Grid.RowDefinitions><RowDefinition Height="360"/><RowDefinition Height="14"/><RowDefinition Height="278"/></Grid.RowDefinitions>
        <Border Grid.Row="0" Style="{StaticResource Card}" Padding="0">
         <Grid><Grid.RowDefinitions><RowDefinition Height="60"/><RowDefinition Height="*"/><RowDefinition Height="46"/></Grid.RowDefinitions>
-         <Grid Margin="20,0" FlowDirection="RightToLeft"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Width="32" Height="32" CornerRadius="8" Background="#12A985"><TextBlock Text="✎" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="یادداشت سریع" FontSize="19" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Margin="10,0" VerticalAlignment="Center"/></StackPanel></Grid>
+         <Grid Margin="20,0" FlowDirection="RightToLeft"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Width="36" Height="36" CornerRadius="10" Background="#12A985"><TextBlock Text="✎" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="یادداشت سریع" FontSize="18" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Margin="10,0" VerticalAlignment="Center"/></StackPanel></Grid>
          <Grid Grid.Row="1" Margin="16,0"><Grid.Background><DrawingBrush TileMode="Tile" Viewport="0,0,1,30" ViewportUnits="Absolute"><DrawingBrush.Drawing><DrawingGroup><GeometryDrawing Brush="#F9FBFC"><GeometryDrawing.Pen><Pen Brush="#E7ECEF" Thickness="1"/></GeometryDrawing.Pen><GeometryDrawing.Geometry><LineGeometry StartPoint="0,29" EndPoint="600,29"/></GeometryDrawing.Geometry></GeometryDrawing></DrawingGroup></DrawingBrush.Drawing></DrawingBrush></Grid.Background>
           <TextBox AcceptsReturn="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent" Padding="16" FontSize="14" Foreground="#43545A" ToolTip="اینجا یادداشت کنید ..."/>
          </Grid>
@@ -97,30 +96,6 @@
        </Border>
       </Grid>
 
-      <!-- RIGHT: quick links + tools -->
-      <Grid Grid.Column="4">
-       <Grid.RowDefinitions><RowDefinition Height="420"/><RowDefinition Height="14"/><RowDefinition Height="218"/></Grid.RowDefinitions>
-       <Border Grid.Row="0" Style="{StaticResource Card}" Padding="14">
-        <Grid><Grid.RowDefinitions><RowDefinition Height="48"/><RowDefinition Height="*"/><RowDefinition Height="54"/></Grid.RowDefinitions>
-         <Grid FlowDirection="RightToLeft"><TextBlock Text="لینک‌های سریع" FontSize="18" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" VerticalAlignment="Center"/><TextBlock Text="🔗" FontSize="20" Foreground="#0EA67E" HorizontalAlignment="Left" VerticalAlignment="Center"/></Grid>
-         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"><ItemsControl x:Name="DashboardQuickLinks"><ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="4" MinHeight="84" Style="{StaticResource SoftButton}" Background="#DDF6F9FA"><StackPanel><Border Width="38" Height="38" CornerRadius="19" Background="White"><TextBlock Text="{Binding Icon}" FontSize="18" Foreground="#149D7C" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="{Binding Title}" Margin="0,7,0,0" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/></StackPanel></Button></DataTemplate></ItemsControl.ItemTemplate></ItemsControl></ScrollViewer>
-         <Button Grid.Row="2" x:Name="AddLinkButton" Content="＋  افزودن لینک جدید" Margin="4,7,4,0" Style="{StaticResource SoftButton}" Background="#DDF1F5F6" Foreground="#2D3E44" Click="AddLink_Click"/>
-         <TextBlock x:Name="QuickLinkCountText" Visibility="Collapsed"/>
-        </Grid>
-       </Border>
-       <Border Grid.Row="2" Style="{StaticResource Card}" Padding="14">
-        <Grid><Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="*"/></Grid.RowDefinitions><Grid FlowDirection="RightToLeft"><TextBlock Text="ابزارهای کاربردی" FontSize="17" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold"/><TextBlock Text="▦" FontSize="20" Foreground="#0EA67E" HorizontalAlignment="Left"/></Grid>
-         <UniformGrid Grid.Row="1" Columns="3" Rows="2">
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#DDF7FAFA" Content="🌐&#10;مرورگر داخلی"/>
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#F7FAFA" Content="▦&#10;ماشین حساب"/>
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#F7FAFA" Content="🔔&#10;یادآور" Click="Planner_Click"/>
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#F7FAFA" Content="📷&#10;عکس‌برداری"/>
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#F7FAFA" Content="▣&#10;ویدیو"/>
-          <Button Style="{StaticResource SoftButton}" Margin="4" Background="#F7FAFA" Content="📁&#10;فایل‌ها"/>
-         </UniformGrid>
-        </Grid>
-       </Border>
-      </Grid>
      </Grid>
 
      <!-- bottom inspiration banner -->
@@ -132,7 +107,6 @@
       </Grid>
      </Border>
     </Grid>
-   </ScrollViewer>
 
    <Border Grid.Row="2" Background="#F8FAFB" BorderBrush="#E5EAED" BorderThickness="0,1,0,0">
     <Grid Margin="26,0" FlowDirection="LeftToRight"><TextBlock Text="▣   ۱۰:۲۴  |  سه‌شنبه ۲۷ شهریور ۱۴۰۵" FontSize="10" Foreground="#607077" VerticalAlignment="Center"/><StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"><TextBlock Text="●" Foreground="#13A87F"/><TextBlock Text="  آنلاین     |     SmartDesk V8" FontSize="10" Foreground="#607077"/></StackPanel></Grid>
@@ -145,10 +119,10 @@
     <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="62"/><RowDefinition Height="32"/></Grid.RowDefinitions>
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
      <ItemsControl x:Name="SidebarQuickLinks">
-      <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="2"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+      <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate><DataTemplate>
-       <Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="6" MinHeight="112" Style="{StaticResource SoftButton}" Background="#334C6668" BorderBrush="#668AA4A5" BorderThickness="1">
-        <StackPanel VerticalAlignment="Center"><Border Width="48" Height="48" CornerRadius="16" Background="#40FFFFFF" BorderBrush="#44FFFFFF" BorderThickness="1"><TextBlock Text="{Binding Icon}" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="{Binding Title}" Foreground="White" Margin="0,10,0,0" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/></StackPanel>
+       <Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="4,5" Height="72" Style="{StaticResource SoftButton}" Background="#244C6668" BorderBrush="#557F999B" BorderThickness="1">
+        <Grid FlowDirection="RightToLeft"><Grid.ColumnDefinitions><ColumnDefinition Width="52"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><Border Width="42" Height="42" CornerRadius="21" Background="#3FFFFFFF" BorderBrush="#55FFFFFF" BorderThickness="1" VerticalAlignment="Center"><TextBlock Text="{Binding Icon}" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><StackPanel Grid.Column="1" Margin="10,0,4,0" VerticalAlignment="Center"><TextBlock Text="{Binding Title}" Foreground="White" FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/><TextBlock Text="باز کردن در مرورگر داخلی" Foreground="#AFC7C9" FontSize="10" Margin="0,4,0,0"/></StackPanel></Grid>
        </Button>
       </DataTemplate></ItemsControl.ItemTemplate>
      </ItemsControl>
