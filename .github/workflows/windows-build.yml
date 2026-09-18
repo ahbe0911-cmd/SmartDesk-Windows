@@ -32,6 +32,15 @@ jobs:
           $font = "$fontDir\Vazirmatn.ttf"
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/google/fonts/main/ofl/vazirmatn/Vazirmatn%5Bwght%5D.ttf" -OutFile $font -UseBasicParsing
           if ((Get-Item $font).Length -lt 100000) { throw "Vazirmatn font download is incomplete." }
+      - name: Add supplied Persian application fonts
+        shell: pwsh
+        run: |
+          $fontDir = "$env:GITHUB_WORKSPACE\src\SmartDesk\Resources\Fonts"
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mohammadhasananisi/personal_accountant/main/assets/fonts/Far_Nazanin.ttf" -OutFile "$fontDir\Far_Nazanin.ttf" -UseBasicParsing
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/negin-amiri/my-dijikala-clone/main/fonts/titr/Far_TitrBd.ttf" -OutFile "$fontDir\Far_TitrBd.ttf" -UseBasicParsing
+          if ((Get-Item "$fontDir\Far_Nazanin.ttf").Length -lt 50000) { throw "Far Nazanin font download is incomplete." }
+          if ((Get-Item "$fontDir\Far_TitrBd.ttf").Length -lt 50000) { throw "Far Titr font download is incomplete." }
+
       - name: Restore dependencies
         run: dotnet restore src/SmartDesk/SmartDesk.csproj
       - name: Publish self-contained application
