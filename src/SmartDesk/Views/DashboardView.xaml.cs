@@ -26,7 +26,6 @@ public partial class DashboardView : UserControl
     {
         InitializeComponent();
         DashboardQuickLinks.ItemsSource = _links;
-        SidebarQuickLinks.ItemsSource = _links;
         _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _clockTimer.Tick += (_, _) => UpdateClock();
         Loaded += (_, _) => { UpdateClock(); RenderCalendar(); _clockTimer.Start(); };
