@@ -1,9 +1,9 @@
-name: Capture SmartDesk V7 UI
+name: Capture SmartDesk V8 UI
 
 on:
   workflow_dispatch:
   push:
-    branches: [feature/reference-ui-v7]
+    branches: [feature/reference-ui-v8]
     paths:
       - '.github/workflows/v6-ui-screenshot.yml'
       - 'tools/SmartDesk.UiCapture/**'
@@ -33,22 +33,22 @@ jobs:
       - name: Build real WPF capture harness
         shell: pwsh
         run: dotnet build tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release
-      - name: Render actual V7 DashboardView
+      - name: Render actual V8 DashboardView
         shell: pwsh
         run: dotnet run --project tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release --no-build
       - name: Collect rendered PNG
         shell: pwsh
         run: |
-          $shot = Get-ChildItem -Path tools/SmartDesk.UiCapture/bin/Release -Filter 'SmartDesk-V7-real-render.png' -Recurse | Select-Object -First 1
-          if (-not $shot) { throw 'Rendered V7 screenshot was not created.' }
+          $shot = Get-ChildItem -Path tools/SmartDesk.UiCapture/bin/Release -Filter 'SmartDesk-V8-real-render.png' -Recurse | Select-Object -First 1
+          if (-not $shot) { throw 'Rendered V8 screenshot was not created.' }
           New-Item -ItemType Directory -Force -Path screenshots | Out-Null
-          Copy-Item $shot.FullName screenshots/SmartDesk-V7-real-render.png
+          Copy-Item $shot.FullName screenshots/SmartDesk-V8-real-render.png
           Write-Host "Captured: $($shot.FullName)"
           Write-Host "Size: $($shot.Length) bytes"
       - name: Upload real rendered screenshot
         uses: actions/upload-artifact@v4
         with:
-          name: SmartDesk-V7-Real-Rendered-Screenshot
-          path: screenshots/SmartDesk-V7-real-render.png
+          name: SmartDesk-V8-Real-Rendered-Screenshot
+          path: screenshots/SmartDesk-V8-real-render.png
           if-no-files-found: error
           retention-days: 7
