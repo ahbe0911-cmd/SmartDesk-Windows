@@ -57,30 +57,9 @@ public partial class MainWindow : Window
                 userDataFolder: AppPaths.BrowserDataDirectory,
                 options: null);
 
-            var startupTabs = _data.Settings.RestoreLastSession
-                ? _data.Settings.LastOpenTabs
-                    .Where(address => BrowserUriService.TryNormalize(address, out _))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .Take(10)
-                    .ToList()
-                : [];
-
-            if (startupTabs.Count == 0)
-            {
-                startupTabs.Add(_data.Settings.HomeUrl);
-            }
-
-            foreach (var address in startupTabs)
-            {
-                await CreateTabAsync(address, activate: BrowserTabs.Items.Count == 0);
-            }
-
-            if (BrowserTabs.Items.Count > 0)
-            {
-                BrowserTabs.SelectedIndex = 0;
-            }
-
-            StatusText.Text = "مرورگر آماده است.";
+            // V8 dashboard-first: initialize the persistent WebView2 profile only.
+            // Sites are created on demand inside the centered modal, avoiding slow hidden startup tabs.
+            StatusText.Text = "مرورگر داخلی آماده است.";
         }
         catch (WebView2RuntimeNotFoundException ex)
         {
