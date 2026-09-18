@@ -2,7 +2,7 @@ name: Build SmartDesk Windows
 
 on:
   push:
-    branches: [main, feature/dashboard-v5, feature/reference-ui-v6, feature/reference-ui-v7]
+    branches: [main, feature/dashboard-v5, feature/reference-ui-v6, feature/reference-ui-v7, feature/reference-ui-v8]
   workflow_dispatch:
 
 permissions:
@@ -76,7 +76,7 @@ jobs:
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: SmartDesk-V7-Setup-Windows-x64
+          name: SmartDesk-V8-Setup-Windows-x64
           path: |
             artifacts/SmartDesk-Setup-Windows-x64.exe
             artifacts/SmartDesk-Setup-Windows-x64.exe.sha256
@@ -85,7 +85,7 @@ jobs:
       - name: Upload portable version
         uses: actions/upload-artifact@v4
         with:
-          name: SmartDesk-V7-Portable-Windows-x64
+          name: SmartDesk-V8-Portable-Windows-x64
           path: |
             artifacts/SmartDesk-Portable-Windows-x64.zip
             artifacts/SmartDesk-Portable-Windows-x64.zip.sha256
