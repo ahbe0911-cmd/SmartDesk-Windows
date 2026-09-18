@@ -10,7 +10,7 @@
   <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}"><Setter Property="FontFamily" Value="Vazirmatn"/><Setter Property="Height" Value="52"/><Setter Property="Margin" Value="16,4"/><Setter Property="Padding" Value="18,0"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Foreground" Value="#F3FAFA"/><Setter Property="Background" Value="Transparent"/><Setter Property="BorderThickness" Value="0"/><Setter Property="FontSize" Value="15"/></Style>
  </UserControl.Resources>
 
- <Grid FlowDirection="LeftToRight"><Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#D9D7E4DC" Offset="0"/><GradientStop Color="#BFA6B7A9" Offset=".42"/><GradientStop Color="#D96B7D73" Offset="1"/></LinearGradientBrush></Grid.Background>
+ <Grid FlowDirection="LeftToRight"><Grid.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#FFF7EF" Offset="0"/><GradientStop Color="#EAF7F2" Offset=".48"/><GradientStop Color="#E8F1FF" Offset="1"/></LinearGradientBrush></Grid.Background>
   <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="320"/></Grid.ColumnDefinitions>
 
   <!-- MAIN WORKSPACE -->
@@ -28,16 +28,11 @@
      <Border Grid.Column="1" Width="420" Height="40" CornerRadius="23" Background="#EEF2F4" HorizontalAlignment="Center" VerticalAlignment="Center">
       <Grid FlowDirection="RightToLeft"><TextBlock Text="⌕" FontSize="23" Foreground="#5F737D" Margin="15,0" VerticalAlignment="Center"/><TextBox x:Name="DashboardSearchBox" Margin="48,0,16,0" BorderThickness="0" Background="Transparent" VerticalContentAlignment="Center" Foreground="#5F6D72" ToolTip="جستجو در لینک‌های کاربردی" TextChanged="DashboardSearchBox_TextChanged"/></Grid>
      </Border>
-     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-      <Button Content="☀" Width="42" Height="42" Style="{StaticResource SoftButton}" Background="#F2F5F6" Click="LightTheme_Click"/>
-      <Button Content="☾" Width="42" Height="42" Margin="8,0" Style="{StaticResource SoftButton}" Background="#F2F5F6" Click="DarkTheme_Click"/>
-      <Button Content="⚙" Width="42" Height="42" Style="{StaticResource SoftButton}" Background="#F2F5F6"/>
-     </StackPanel>
     </Grid>
    </Border>
 
    <Grid Grid.Row="1" Margin="22,16,22,14">
-     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="16"/><RowDefinition Height="116"/></Grid.RowDefinitions>
+     <Grid.RowDefinitions><RowDefinition Height="*"/></Grid.RowDefinitions>
      <Grid FlowDirection="LeftToRight">
       <Grid.ColumnDefinitions><ColumnDefinition Width="31*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="69*"/></Grid.ColumnDefinitions>
 
@@ -70,42 +65,30 @@
        </Border>
       </Grid>
 
-      <!-- CENTER: note + tasks -->
-      <Grid Grid.Column="2">
-       <Grid.RowDefinitions><RowDefinition Height="360"/><RowDefinition Height="14"/><RowDefinition Height="278"/></Grid.RowDefinitions>
-       <Border Grid.Row="0" Style="{StaticResource Card}" Padding="0">
-        <Grid><Grid.RowDefinitions><RowDefinition Height="60"/><RowDefinition Height="*"/><RowDefinition Height="46"/></Grid.RowDefinitions>
-         <Grid Margin="20,0" FlowDirection="RightToLeft"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Border Width="36" Height="36" CornerRadius="10" Background="#12A985"><TextBlock Text="✎" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><TextBlock Text="یادداشت سریع" FontSize="18" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Margin="10,0" VerticalAlignment="Center"/></StackPanel></Grid>
-         <Grid Grid.Row="1" Margin="16,0"><Grid.Background><DrawingBrush TileMode="Tile" Viewport="0,0,1,30" ViewportUnits="Absolute"><DrawingBrush.Drawing><DrawingGroup><GeometryDrawing Brush="#F9FBFC"><GeometryDrawing.Pen><Pen Brush="#E7ECEF" Thickness="1"/></GeometryDrawing.Pen><GeometryDrawing.Geometry><LineGeometry StartPoint="0,29" EndPoint="600,29"/></GeometryDrawing.Geometry></GeometryDrawing></DrawingGroup></DrawingBrush.Drawing></DrawingBrush></Grid.Background>
-          <TextBox AcceptsReturn="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent" Padding="16" FontSize="14" Foreground="#43545A" ToolTip="اینجا یادداشت کنید ..."/>
-         </Grid>
-         <Grid Grid.Row="2" Margin="16,0" FlowDirection="RightToLeft"><StackPanel Orientation="Horizontal" VerticalAlignment="Center"><TextBlock Text="▥   ☷   ⛶" Foreground="#687A81" FontSize="16"/></StackPanel><Button Content="ذخیره" Width="96" Height="34" HorizontalAlignment="Left" Style="{StaticResource SoftButton}" Background="#0FA77F" Foreground="White"/></Grid>
-        </Grid>
-       </Border>
-       <Border Grid.Row="2" Style="{StaticResource Card}" Padding="16">
-        <Grid><Grid.RowDefinitions><RowDefinition Height="44"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-         <Grid FlowDirection="RightToLeft"><StackPanel Orientation="Horizontal"><TextBlock Text="☑" Foreground="#159B78" FontSize="22"/><TextBlock Text="کارهای امروز" Margin="8,0" FontSize="18" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold"/></StackPanel><Button Content="＋ افزودن کار" HorizontalAlignment="Left" Style="{StaticResource SoftButton}" Background="#0FA77F" Foreground="White" Click="Planner_Click"/></Grid>
-         <StackPanel Grid.Row="1">
-          <CheckBox Content="پاسخ به پیام‌ها" IsChecked="True" Margin="4,8" FontSize="13"/>
-          <CheckBox Content="بررسی اخبار کتابخانه" Margin="4,8" FontSize="13"/>
-          <CheckBox Content="تهیه گزارش هفتگی" Margin="4,8" FontSize="13"/>
-          <CheckBox Content="مطالعه و تحقیق" Margin="4,8" FontSize="13"/>
-          <CheckBox Content="ورزش و پیاده روی" Margin="4,8" FontSize="13"/>
+      <!-- CENTER: large Persian calendar -->
+      <Border Grid.Column="2" Style="{StaticResource Card}" Padding="28" VerticalAlignment="Stretch">
+       <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="64"/><RowDefinition Height="42"/><RowDefinition Height="*"/><RowDefinition Height="76"/></Grid.RowDefinitions>
+        <Grid FlowDirection="RightToLeft">
+         <TextBlock x:Name="CalendarTitleText" FontSize="28" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Foreground="#26343A" VerticalAlignment="Center"/>
+         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+          <Button Content="‹" Width="42" Style="{StaticResource SoftButton}" Background="#FFF0E6" Click="PreviousMonth_Click"/>
+          <Button Content="امروز" Margin="8,0" Padding="18,8" Style="{StaticResource SoftButton}" Background="#FF8A5B" Foreground="White" Click="Today_Click"/>
+          <Button Content="›" Width="42" Style="{StaticResource SoftButton}" Background="#FFF0E6" Click="NextMonth_Click"/>
          </StackPanel>
         </Grid>
-       </Border>
-      </Grid>
+        <UniformGrid Grid.Row="1" Columns="7" FlowDirection="RightToLeft">
+         <TextBlock Text="شنبه" HorizontalAlignment="Center"/><TextBlock Text="یکشنبه" HorizontalAlignment="Center"/><TextBlock Text="دوشنبه" HorizontalAlignment="Center"/><TextBlock Text="سه‌شنبه" HorizontalAlignment="Center"/><TextBlock Text="چهارشنبه" HorizontalAlignment="Center"/><TextBlock Text="پنجشنبه" HorizontalAlignment="Center"/><TextBlock Text="جمعه" Foreground="#E05A63" HorizontalAlignment="Center"/>
+        </UniformGrid>
+        <UniformGrid x:Name="CalendarDaysGrid" Grid.Row="2" Columns="7" Rows="6" FlowDirection="RightToLeft"/>
+        <Border Grid.Row="3" CornerRadius="16" Background="#FFF7F0" Margin="0,12,0,0" Padding="16">
+         <Grid FlowDirection="RightToLeft"><TextBlock Text="یادداشت و یادآور زمان‌دار" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/><Button Content="＋ افزودن یادداشت" HorizontalAlignment="Left" Style="{StaticResource SoftButton}" Background="#FF8A5B" Foreground="White" Click="Planner_Click"/></Grid>
+        </Border>
+       </Grid>
+      </Border>
 
      </Grid>
 
-     <!-- bottom inspiration banner -->
-     <Border Grid.Row="2" CornerRadius="18" ClipToBounds="True">
-      <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,0"><GradientStop Color="#263B36"/><GradientStop Color="#87958D" Offset=".38"/><GradientStop Color="#E8E4E1" Offset="1"/></LinearGradientBrush></Border.Background>
-      <Grid FlowDirection="LeftToRight"><Grid.ColumnDefinitions><ColumnDefinition Width="45*"/><ColumnDefinition Width="55*"/></Grid.ColumnDefinitions>
-       <Canvas><Ellipse Width="150" Height="150" Fill="#2F5144" Opacity=".45" Canvas.Left="18" Canvas.Top="-24"/><Rectangle Width="250" Height="50" RadiusX="8" RadiusY="8" Fill="#B3AAA2" Canvas.Left="70" Canvas.Top="50" RenderTransformOrigin=".5,.5"><Rectangle.RenderTransform><RotateTransform Angle="-8"/></Rectangle.RenderTransform></Rectangle></Canvas>
-       <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="28" FlowDirection="RightToLeft"><TextBlock Text="هر روز فرصتی تازه است" FontSize="19" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Foreground="#172328"/><TextBlock Text="برای شروعی بهتر ..." Margin="0,7,0,0" FontSize="15" Foreground="#35454A"/></StackPanel>
-      </Grid>
-     </Border>
     </Grid>
 
    <Border Grid.Row="2" Background="#F8FAFB" BorderBrush="#E5EAED" BorderThickness="0,1,0,0">
