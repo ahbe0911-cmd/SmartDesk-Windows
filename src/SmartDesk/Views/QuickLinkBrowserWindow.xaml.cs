@@ -26,14 +26,15 @@ public partial class QuickLinkBrowserWindow : Window
 
     private void FitToOwner()
     {
-        var owner = Owner;
+        // Fit the modal to the usable screen while keeping it visually centered.
         var work = SystemParameters.WorkArea;
-        var width = owner is null ? work.Width * 0.90 : owner.ActualWidth * 0.90;
-        var height = owner is null ? work.Height * 0.90 : owner.ActualHeight * 0.90;
-        Width = Math.Min(work.Width - 36, Math.Max(760, width));
-        Height = Math.Min(work.Height - 36, Math.Max(560, height));
-        MaxWidth = work.Width - 20;
-        MaxHeight = work.Height - 20;
+        const double edgeGap = 18;
+        Width = Math.Max(800, work.Width - (edgeGap * 2));
+        Height = Math.Max(600, work.Height - (edgeGap * 2));
+        MaxWidth = work.Width - 8;
+        MaxHeight = work.Height - 8;
+        Left = work.Left + (work.Width - Width) / 2;
+        Top = work.Top + (work.Height - Height) / 2;
     }
 
     private async void Window_Loaded(object sender, RoutedEventArgs e)
