@@ -50,10 +50,12 @@
         </Grid>
        </Border>
        <Border Grid.Row="2" Style="{StaticResource Card}">
-        <Grid><Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="34"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-         <Grid FlowDirection="RightToLeft"><TextBlock x:Name="CalendarTitleText" FontSize="18" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Foreground="#1E2C31"/><StackPanel Orientation="Horizontal" HorizontalAlignment="Left" FlowDirection="LeftToRight"><Button Content="‹" Width="32" Style="{StaticResource SoftButton}" Background="Transparent" Click="PreviousMonth_Click"/><Button Content="امروز" Margin="5,0" Style="{StaticResource SoftButton}" Background="#E8F6F1" Foreground="#168B6B" Click="Today_Click"/><Button Content="›" Width="32" Style="{StaticResource SoftButton}" Background="Transparent" Click="NextMonth_Click"/></StackPanel></Grid>
-         <UniformGrid Grid.Row="1" Columns="7" FlowDirection="RightToLeft"><TextBlock Text="ش" HorizontalAlignment="Center"/><TextBlock Text="ی" HorizontalAlignment="Center"/><TextBlock Text="د" HorizontalAlignment="Center"/><TextBlock Text="س" HorizontalAlignment="Center"/><TextBlock Text="چ" HorizontalAlignment="Center"/><TextBlock Text="پ" HorizontalAlignment="Center"/><TextBlock Text="ج" Foreground="#D84E55" HorizontalAlignment="Center"/></UniformGrid>
-         <UniformGrid x:Name="CalendarDaysGrid" Grid.Row="2" Columns="7" Rows="6" FlowDirection="RightToLeft"/>
+        <Grid FlowDirection="RightToLeft">
+         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+          <TextBlock Text="تقویم شمسی" FontSize="17" FontFamily="./Resources/Fonts/#Far.Titr" FontWeight="Bold" Foreground="#26343A" HorizontalAlignment="Center"/>
+          <TextBlock Text="تقویم کامل در مرکز صفحه" Margin="0,10,0,0" FontSize="12" Foreground="#738087" HorizontalAlignment="Center"/>
+          <Button Content="امروز" Margin="0,18,0,0" Padding="22,8" Style="{StaticResource SoftButton}" Background="#FF8A5B" Foreground="White" Click="Today_Click"/>
+         </StackPanel>
         </Grid>
        </Border>
        <Border Grid.Row="4" Style="{StaticResource Card}">
