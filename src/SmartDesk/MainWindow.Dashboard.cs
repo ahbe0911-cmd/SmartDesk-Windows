@@ -34,10 +34,9 @@ public partial class MainWindow
             Padding = new Thickness(16, 8, 16, 8)
         };
 
-        BrowserTabs.Items.Insert(0, _dashboardTab);
-        BrowserTabs.SelectedItem = _dashboardTab;
+        // Dashboard is the primary desktop surface. Legacy browser chrome stays out of the visual tree.
+        Content = _dashboardView;
         _quickLinks.CollectionChanged += QuickLinks_CollectionChangedForDashboard;
-        HomeButton.PreviewMouseLeftButtonDown += DashboardHomeButton_PreviewMouseLeftButtonDown;
         WindowsReminderService.RescheduleAll(_data.Reminders);
         StatusText.Text = "داشبورد SmartDesk V8 آماده است.";
         Title = "میزکار هوشمند";
@@ -123,8 +122,8 @@ public partial class MainWindow
 
     private void ShowDashboard()
     {
-        if (_dashboardTab is null) return;
-        BrowserTabs.SelectedItem = _dashboardTab;
+        if (_dashboardView is null) return;
+        if (!ReferenceEquals(Content, _dashboardView)) Content = _dashboardView;
         AddressBox.Text = string.Empty;
         StatusText.Text = "صفحه اصلی SmartDesk V8";
         Title = "میزکار هوشمند";
