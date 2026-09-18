@@ -39,7 +39,7 @@ public partial class MainWindow
         _quickLinks.CollectionChanged += QuickLinks_CollectionChangedForDashboard;
         HomeButton.PreviewMouseLeftButtonDown += DashboardHomeButton_PreviewMouseLeftButtonDown;
         WindowsReminderService.RescheduleAll(_data.Reminders);
-        StatusText.Text = "داشبورد SmartDesk V5 آماده است.";
+        StatusText.Text = "داشبورد SmartDesk V7 آماده است.";
         Title = "میزکار هوشمند";
     }
 
@@ -110,7 +110,7 @@ public partial class MainWindow
         }
 
         var browserWindow = new QuickLinkBrowserWindow(_browserEnvironment, link.Title, link.Url) { Owner = this };
-        StatusText.Text = $"«{link.Title}» در مرورگر تمام‌صفحه SmartDesk باز شد.";
+        StatusText.Text = $"«{link.Title}» در پنجره مرکزی SmartDesk باز شد.";
         browserWindow.ShowDialog();
         ShowDashboard();
     }
@@ -126,7 +126,7 @@ public partial class MainWindow
         if (_dashboardTab is null) return;
         BrowserTabs.SelectedItem = _dashboardTab;
         AddressBox.Text = string.Empty;
-        StatusText.Text = "صفحه اصلی SmartDesk V5";
+        StatusText.Text = "صفحه اصلی SmartDesk V7";
         Title = "میزکار هوشمند";
     }
 }
