@@ -118,7 +118,7 @@
    <Grid Margin="14">
     <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="62"/><RowDefinition Height="32"/></Grid.RowDefinitions>
     <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-     <ItemsControl x:Name="SidebarQuickLinks">
+     <ItemsControl x:Name="DashboardQuickLinks">
       <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate><DataTemplate>
        <Button Tag="{Binding}" Click="QuickLinkCard_Click" Margin="4,5" Height="72" Style="{StaticResource SoftButton}" Background="#244C6668" BorderBrush="#557F999B" BorderThickness="1">
@@ -127,8 +127,8 @@
       </DataTemplate></ItemsControl.ItemTemplate>
      </ItemsControl>
     </ScrollViewer>
-    <Button Grid.Row="1" Content="＋  افزودن لینک جدید" Margin="5,8,5,0" Style="{StaticResource SoftButton}" Background="#183C4145" Foreground="White" BorderBrush="#88D8E5E6" BorderThickness="1" Click="AddLink_Click"/>
-    <TextBlock Grid.Row="2" Text="SmartDesk V8" Foreground="#9DB7BC" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+    <Button Grid.Row="1" x:Name="AddLinkButton" Content="＋  افزودن لینک جدید" Margin="5,8,5,0" Style="{StaticResource SoftButton}" Background="#183C4145" Foreground="White" BorderBrush="#88D8E5E6" BorderThickness="1" Click="AddLink_Click"/>
+    <TextBlock x:Name="QuickLinkCountText" Visibility="Collapsed"/><TextBlock Grid.Row="2" Text="SmartDesk V8" Foreground="#9DB7BC" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
    </Grid>
   </Border>
  </Grid>
