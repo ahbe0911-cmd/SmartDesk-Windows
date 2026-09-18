@@ -19,7 +19,7 @@ public partial class QuickLinkBrowserWindow : Window
         _initialUrl = url;
         Title = string.IsNullOrWhiteSpace(title) ? "SmartDesk" : $"{title} - SmartDesk";
         BrowserHost.Children.Add(_browser);
-        Loaded += Window_Loaded;
+        Loaded += Window_Loaded;\n        SourceInitialized += (_, _) => FitToOwner();
         Closed += (_, _) => _browser.DisposeBrowser();
     }
 
