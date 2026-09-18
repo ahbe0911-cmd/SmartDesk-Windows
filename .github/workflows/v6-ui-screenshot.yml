@@ -30,6 +30,15 @@ jobs:
           if (-not (Test-Path "$fontDir/Vazirmatn.ttf")) {
             Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/google/fonts/main/ofl/vazirmatn/Vazirmatn%5Bwght%5D.ttf' -OutFile "$fontDir/Vazirmatn.ttf"
           }
+      - name: Add supplied Persian application fonts
+        shell: pwsh
+        run: |
+          $fontDir = 'src/SmartDesk/Resources/Fonts'
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/mohammadhasananisi/personal_accountant/main/assets/fonts/Far_Nazanin.ttf' -OutFile "$fontDir/Far_Nazanin.ttf"
+          Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/negin-amiri/my-dijikala-clone/main/fonts/titr/Far_TitrBd.ttf' -OutFile "$fontDir/Far_TitrBd.ttf"
+          if ((Get-Item "$fontDir/Far_Nazanin.ttf").Length -lt 50000) { throw 'Far Nazanin font download is incomplete.' }
+          if ((Get-Item "$fontDir/Far_TitrBd.ttf").Length -lt 50000) { throw 'Far Titr font download is incomplete.' }
+
       - name: Build real WPF capture harness
         shell: pwsh
         run: dotnet build tools/SmartDesk.UiCapture/SmartDesk.UiCapture.csproj -c Release
