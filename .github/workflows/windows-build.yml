@@ -1,4 +1,4 @@
-name: Build SmartDesk Windows
+name: Build SmartDesk Window
 
 on:
   push:
